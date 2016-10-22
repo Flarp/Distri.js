@@ -1,0 +1,34 @@
+@font-face {
+    font-family: "Abel";
+    font-style: normal;
+    font-weight: 100;
+    src: url('Abel-Regular.ttf')
+}
+
+@-webkit-keyframes fadein {
+    from {opacity:0;margin:-650px 0 0 -325px;} to {opacity:1;margin:-275px 0 0 -325px;}
+}
+
+@keyframes fadein {
+    from {opacity:0;margin:-650px 0 0 -325px;} to {opacity:1;margin:-275px 0 0 -325px;}
+}
+
+@-webkit-keyframes fadeout {
+    from {opacity:1;margin:-275px 0 0 -325px;} to {opacity:0;margin:-650px 0 0 -325px;}
+}
+
+@keyframes fadeout {
+    from {opacity:1;margin:-275px 0 0 -325px;} to {opacity:0;margin:-650px 0 0 -325px;}
+}
+
+.fadein {
+    animation-name: fadein;
+    animation-timing-function: ease;
+    animation-duration: 1s;
+}
+
+.fadeout {
+    animation-name: fadeout;
+    animation-timing-function: ease;
+    animation-duration: 1s;
+}
