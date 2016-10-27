@@ -6,6 +6,7 @@ module.exports = {
         path: `${__dirname}/build`,
         filename: 'distri.min.js'
     },
+    devtool: 'source-map',
     module: {
         loaders: [
             { test: /\.js$/, loader: 'babel-loader', query: {

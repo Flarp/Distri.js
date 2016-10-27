@@ -4,7 +4,6 @@
   "description": "",
   "main": "distri.js",
   "dependencies": {
-    "bootstrap": "^3.3.7",
     "hashcashgen": "Kurimizumi/node-hashcashgen-web",
     "msgpack-js": "creationix/msgpack-js"
   },
@@ -18,13 +17,17 @@
     "css-loader": "^0.25.0",
     "file-loader": "^0.9.0",
     "node-libs-browser": "webpack/node-libs-browser",
+    "promise-polyfill": "^6.0.2",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
-    "webpack-append": "^0.1.2"
+    "webpack-append": "^0.1.2",
+    "whatwg-fetch": "^1.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node examples/collatz/server.js",
+    "postInstall": "./node_modules/webpack/bin/webpack"
   },
   "author": "",
   "license": "BSD"

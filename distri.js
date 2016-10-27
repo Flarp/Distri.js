@@ -1,4 +1,4 @@
-/* global fetch URL Image location distriDefault */
+/* global fetch URL Image location distriDefault TextEncoder */
 
 /*
     * Distri-JS by Flarp Emerald and contributors. Where I reused code
@@ -11,7 +11,6 @@
     * attack so I just used one from a website. I'm terrible with cookies.
 */
 
-import './node_modules/bootstrap/dist/css/bootstrap.min.css'
 import './distri.css'
 let sockets = [];
 
@@ -44,8 +43,9 @@ window.Distri = {
     start: (objs, cb) => {
         objs.map(obj => {
             const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
-            
+
             socket.onopen = () => {
+                
                 socket.send(msg.encode({responseType:'request',response:['javascript']}))
             }
             
@@ -63,6 +63,7 @@ window.Distri = {
                                 worker = new Worker(URL.createObjectURL(result))
                                 cb(socket, worker)
                                 socket.send(msg.encode({responseType: 'request_hash', response: true}))
+                                
                             })
             
                             break;
@@ -176,8 +177,6 @@ centerify.appendChild(document.createElement('br'))
 centerify.appendChild(go)
 distriDiv.appendChild(centerify)
 
-let interval;
-
 window.onclick = (e) => {
     if (e.target !== distriDiv && distriDiv.style.opacity === '1' && !distriDiv.contains(e.target)) {
         distriDiv.className = 'fadeout'
@@ -234,7 +233,7 @@ resetButton.onclick = () => {
     })
 }
 
-fetch(`${location.protocol}//rawgit.com/Flarp/Distri-Safe/master/safe.json`).then(result => result.json())
+fetch(`${location.protocol}//honeybee-hive-flarp-pyjamarama.c9users.io/safe.json`).then(result => result.json())
 .then(result => {
     result.map((obj, ind) => {
     const [cur, curButton, curHeader, curBody, curImage, center, filler] = [document.createElement('div'), 
