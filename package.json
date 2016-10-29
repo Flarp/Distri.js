@@ -5,6 +5,7 @@
   "main": "distri.js",
   "dependencies": {
     "hashcashgen": "Kurimizumi/node-hashcashgen-web",
+    "js-cookie": "^2.1.3",
     "msgpack-js": "creationix/msgpack-js"
   },
   "devDependencies": {
@@ -30,5 +31,5 @@
     "postInstall": "./node_modules/webpack/bin/webpack"
   },
   "author": "",
-  "license": "BSD"
+  "license": "BSD-3-Clause"
 }

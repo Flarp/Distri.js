@@ -1,43 +1,7 @@
-/* global fetch URL Image location distriDefault TextEncoder */
-
-/*
-    * Distri-JS by Flarp Emerald and contributors. Where I reused code
-    * I give credit to the proper people so don't freak out.
-*/
-
-/*
-    * This part was bummed from http://www.quirksmode.org/js/cookies.html.
-    * When I was writing the cookie portion of this GitHub was under a DDoS
-    * attack so I just used one from a website. I'm terrible with cookies.
-*/
+/* global fetch URL location distriDefault */
 
 import './distri.css'
 let sockets = [];
-
-function createCookie(name,value,days) {
-	if (days) {
-		var date = new Date();
-		date.setTime(date.getTime()+(days*24*60*60*1000));
-		var expires = "; expires="+date.toGMTString();
-	}
-	else var expires = "";
-	document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function readCookie(name) {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-	return null;
-}
-
-function eraseCookie(name) {
-	createCookie(name,"",-1);
-}
 
 window.Distri = {
     start: (objs, cb) => {
@@ -96,6 +60,7 @@ window.Distri = {
 
 const msg = require('msgpack-js-v5')
 const hashcash = require('hashcashgen')
+const Cookie = require('js-cookie')
 const menu = document.createElement('div')
 const go = document.createElement('button')
 
@@ -218,10 +183,10 @@ go.onclick = (e) => {
 
 document.body.appendChild(distriDiv)
 
-const using = readCookie('save') ? JSON.parse(readCookie('save')) : []
+const using = Cookie.get('save') ? Cookie.getJSON('save') : []
 
 saveButton.onclick = () => {
-    createCookie('save',JSON.stringify(using),365)
+    Cookie.set('save',JSON.stringify(using),{expires: 365})
 }
 
 resetButton.onclick = () => {
