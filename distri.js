@@ -1,7 +1,20 @@
-/* global fetch URL location distriDefault */
+/* global fetch URL location distriDefault Blob */
+
+if(!window.Crypto && !window.msCrypto) throw new Error('Browser does not support cryptographic functions')
+const crypto = window.crypto.subtle || window.msCrypto
+if (!window.Worker) throw new Error('Browser does not support Web Workers')
+if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not support binary blobs')
+
+const conversion = require('base64-arraybuffer')
+const arrEqual = require('arraybuffer-equal')
+const msg = require('msgpack-js-v5')
+const hashcash = require('hashcashgen')
+const Cookie = require('js-cookie')
 
 import './distri.css'
 let sockets = [];
+
+
 
 window.Distri = {
     start: (objs, cb) => {
@@ -22,11 +35,17 @@ window.Distri = {
                     switch(message.responseType) {
                         case 'file':
                             fetch(`${location.protocol}//${message.response[0]}`)
-                            .then(result => result.blob())
+                            .then(result => result.arrayBuffer())
                             .then(result => {
-                                worker = new Worker(URL.createObjectURL(result))
-                                cb(socket, worker)
-                                socket.send(msg.encode({responseType: 'request_hash', response: true}))
+                                crypto.digest('SHA-512', result)
+                                    .then(hash => {
+                                        if (arrEqual(conversion.decode(obj.hash), hash)) {
+                                            console.log(result)
+                                            worker = new Worker(URL.createObjectURL(new Blob([result])))
+                                            cb(socket, worker)
+                                            socket.send(msg.encode({responseType: 'request_hash', response: true}))
+                                        }
+                                    })
                                 
                             })
             
@@ -58,9 +77,6 @@ window.Distri = {
     
 }
 
-const msg = require('msgpack-js-v5')
-const hashcash = require('hashcashgen')
-const Cookie = require('js-cookie')
 const menu = document.createElement('div')
 const go = document.createElement('button')
 
@@ -198,7 +214,7 @@ resetButton.onclick = () => {
     })
 }
 
-fetch(`${location.protocol}//honeybee-hive-flarp-pyjamarama.c9users.io/safe.json`).then(result => result.json())
+fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json`).then(result => result.json())
 .then(result => {
     result.map((obj, ind) => {
     const [cur, curButton, curHeader, curBody, curImage, center, filler] = [document.createElement('div'), 

@@ -4,6 +4,8 @@
   "description": "",
   "main": "distri.js",
   "dependencies": {
+    "arraybuffer-equal": "^1.0.4",
+    "base64-arraybuffer": "^0.1.5",
     "hashcashgen": "Kurimizumi/node-hashcashgen-web",
     "js-cookie": "^2.1.3",
     "msgpack-js": "creationix/msgpack-js"
@@ -13,17 +15,14 @@
     "babel-loader": "^6.2.5",
     "babel-plugin-transform-object-assign": "^6.8.0",
     "babel-preset-es2015": "^6.16.0",
-    "babel-preset-es2016": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
     "css-loader": "^0.25.0",
     "file-loader": "^0.9.0",
     "node-libs-browser": "webpack/node-libs-browser",
-    "promise-polyfill": "^6.0.2",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
-    "webpack-append": "^0.1.2",
-    "whatwg-fetch": "^1.0.0"
+    "webpack-append": "^0.1.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

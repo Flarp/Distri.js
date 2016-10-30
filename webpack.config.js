@@ -10,7 +10,7 @@ module.exports = {
     module: {
         loaders: [
             { test: /\.js$/, loader: 'babel-loader', query: {
-                presets: ['es2015', 'stage-0', 'es2016'],
+                presets: ['es2015', 'stage-0'],
                 plugins: ['transform-object-assign']
             } },
             {test: /\.js$/, loader: 'webpack-append', query: 'var _crypto;'},
