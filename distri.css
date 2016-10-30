@@ -33,6 +33,34 @@
     animation-duration: 1s;
 }
 
+@-webkit-keyframes inform-fadein {
+    from {opacity:0;margin:-650px 0 0 -250px;} to {opacity:1;margin:-150px 0 0 -250px;}
+}
+
+@keyframes inform-fadein {
+    from {opacity:0;margin:-650px 0 0 -250px;} to {opacity:1;margin:-150px 0 0 -250px;}
+}
+
+@-webkit-keyframes inform-fadeout {
+    from {opacity:1;margin:-150px 0 0 -250px;} to {opacity:0;margin:-650px 0 0 -250px;}
+}
+
+@keyframes inform-fadeout {
+    from {opacity:1;margin:-150px 0 0 -250px;} to {opacity:0;margin:-650px 0 0 -250px;}
+}
+
+.inform-fadein {
+    animation-name: inform-fadein;
+    animation-timing-function: ease;
+    animation-duration: 1s;
+}
+
+.inform-fadeout {
+    animation-name: inform-fadeout;
+    animation-timing-function: ease;
+    animation-duration: 1s;
+}
+
 /* The bottom part of this file is from Bootstrap. I claim no ownership over it, all rights belong to the creators of Bootstrap. */
 
 .btn {

@@ -1,4 +1,4 @@
-/* global fetch URL location distriDefault Blob */
+/* global fetch URL location distriDefault Blob Distri */
 
 if(!window.Crypto && !window.msCrypto) throw new Error('Browser does not support cryptographic functions')
 const crypto = window.crypto.subtle || window.msCrypto
@@ -18,6 +18,9 @@ let sockets = [];
 
 window.Distri = {
     start: (objs, cb) => {
+        if (!Cookie.get('distri-inform') || Cookie.get('distri-disable')) {
+            return;
+        }
         objs.map(obj => {
             const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
 
@@ -40,7 +43,6 @@ window.Distri = {
                                 crypto.digest('SHA-512', result)
                                     .then(hash => {
                                         if (arrEqual(conversion.decode(obj.hash), hash)) {
-                                            console.log(result)
                                             worker = new Worker(URL.createObjectURL(new Blob([result])))
                                             cb(socket, worker)
                                             socket.send(msg.encode({responseType: 'request_hash', response: true}))
@@ -79,6 +81,8 @@ window.Distri = {
 
 const menu = document.createElement('div')
 const go = document.createElement('button')
+
+
 
 
 const distriDiv = document.createElement('div')
@@ -199,10 +203,10 @@ go.onclick = (e) => {
 
 document.body.appendChild(distriDiv)
 
-const using = Cookie.get('save') ? Cookie.getJSON('save') : []
+const using = Cookie.get('distri-save') ? Cookie.getJSON('distri-save') : []
 
 saveButton.onclick = () => {
-    Cookie.set('save',JSON.stringify(using),{expires: 365})
+    Cookie.set('distri-save',JSON.stringify(using),{expires: 365})
 }
 
 resetButton.onclick = () => {
@@ -288,3 +292,118 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
     
     go.click()
 })
+
+if (!Cookie.get('distri-inform')) {
+    
+    const inform = document.createElement('div')
+    Object.assign(inform.style, {
+        top: '50%',
+        left: "50%",
+        width: '500px',
+        height: '300px',
+        borderRadius: '10px',
+        borderColor: 'grey',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        backgroundColor: 'white',
+        position: 'absolute',
+        boxShadow: '10px 10px 5px grey',
+        overflow: 'auto',
+        textAlign: 'center',
+        opacity: '0',
+        margin: '-150px 0 0 -250px'
+    })
+    
+    const distriDisclaimer = document.createElement('h1')
+    distriDisclaimer.textContent = 'Distri-JS Disclaimer'
+    inform.appendChild(distriDisclaimer)
+    distriDisclaimer.style.fontFamily = "Abel"
+    const text = document.createElement('p')
+    const informCenter = document.createElement('center')
+    informCenter.appendChild(text)
+    text.style.fontFamily = "Abel"
+    text.textContent = "This website has background distributed computing enabled, powered by Distri-JS. Distri-JS uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'."
+    const okay = document.createElement('button')
+    const options = document.createElement('button')
+    const disable = document.createElement('button')
+    Object.assign(disable.style, {
+        fontFamily: 'Abel',
+        position: 'relative',
+        display: 'inline-block',
+        margin: '5px 5px 5px 5px'
+    })
+    
+    Object.assign(options.style, {
+        fontFamily: 'Abel',
+        position: 'relative',
+        display: 'inline-block',
+        margin: '5px 5px 5px 5px'
+    })
+    
+    Object.assign(okay.style, {
+        fontFamily: 'Abel',
+        position: 'relative',
+        display: 'inline-block',
+        margin: '5px 5px 5px 5px'
+    })
+    
+    okay.textContent = 'OK'
+    options.textContent = 'Options'
+    disable.textContent = 'Disable'
+    okay.className = 'btn btn-success'
+    disable.className = 'btn btn-danger'
+    options.className = 'btn btn-primary'
+    
+    okay.onclick = () => {
+        Cookie.set('distri-inform', 'true', {expires:365})
+        go.click()
+        inform.className = 'inform-fadeout'
+        inform.addEventListener('webkitAnimationEnd', inform.remove, {once:true})
+        inform.addEventListener('animationend', inform.remove, {once:true})
+        inform.addEventListener('oanimationend', inform.remove, {once:true})
+    }
+    
+    disable.onclick = () => {
+        Cookie.set('distri-inform', 'true', {expires:365})
+        inform.className = 'inform-fadeout'
+        inform.addEventListener('webkitAnimationEnd', inform.remove, {once:true})
+        inform.addEventListener('animationend', inform.remove, {once:true})
+        inform.addEventListener('oanimationend', inform.remove, {once:true})
+        resetButton.click()
+        saveButton.click()
+        go.click()
+        Cookie.set('distri-disable', true, {expires:365})
+    }
+    
+    options.onclick = () => {
+        Cookie.set('distri-inform', 'true', {expires:365})
+        inform.className = 'inform-fadeout'
+        const optionsFunc = () => {
+            inform.remove()
+            Distri.settings()
+        }
+        inform.addEventListener('webkitAnimationEnd', optionsFunc, {once:true})
+        inform.addEventListener('animationend', optionsFunc, {once:true})
+        inform.addEventListener('oanimationend', optionsFunc, {once:true})
+    }
+    
+    const buttonCenter = document.createElement('center')
+    buttonCenter.style.display = 'block'
+    buttonCenter.appendChild(okay)
+    buttonCenter.appendChild(disable)
+    buttonCenter.appendChild(options)
+    
+    document.body.appendChild(inform)
+    inform.appendChild(informCenter)
+    inform.appendChild(buttonCenter)
+    
+    const complete = () => {
+            inform.style.opacity = '1'
+            inform.style.margin = '-150px 0 0 -250px'
+        }
+    inform.className = 'inform-fadein'
+    inform.addEventListener('webkitAnimationEnd', complete, {once:true})
+    inform.addEventListener('animationend', complete, {once:true})
+    inform.addEventListener('oanimationend', complete, {once:true})
+    
+}
