@@ -7,7 +7,6 @@ if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not suppo
 
 const conversion = require('base64-arraybuffer')
 const arrEqual = require('arraybuffer-equal')
-const msg = require('msgpack-js-v5')
 const hashcash = require('hashcashgen')
 const Cookie = require('js-cookie')
 
@@ -26,15 +25,13 @@ window.Distri = {
 
             socket.onopen = () => {
                 
-                socket.send(msg.encode({responseType:'request',response:['javascript']}))
+                socket.send(JSON.stringify({responseType:'request',response:['javascript']}))
             }
             
             let worker;
             
             socket.onmessage = (m) => {
-                const reader = new FileReader()
-                reader.addEventListener('loadend', () => {
-                    const message = msg.decode(new Uint8Array(reader.result))
+                    const message = JSON.parse(m)
                     switch(message.responseType) {
                         case 'file':
                             fetch(`${location.protocol}//${message.response[0]}`)
@@ -42,10 +39,10 @@ window.Distri = {
                             .then(result => {
                                 crypto.digest('SHA-512', result)
                                     .then(hash => {
-                                        if (arrEqual(conversion.decode(obj.hash), hash)) {
+                                        if (arrEqual(conversion.decode(obj.hashes.javascript), hash)) {
                                             worker = new Worker(URL.createObjectURL(new Blob([result])))
                                             cb(socket, worker)
-                                            socket.send(msg.encode({responseType: 'request_hash', response: true}))
+                                            socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
                                         }
                                     })
                                 
@@ -53,16 +50,14 @@ window.Distri = {
             
                             break;
                         case "submit_hash":
-                            socket.send(msg.encode({responseType: 'submit_hash', response: hashcash(message.response[0], message.response[1])}))
+                            socket.send(JSON.stringify({responseType: 'submit_hash', response: hashcash(message.response[0], message.response[1])}))
                             break;
                         case 'submit_work':
                             worker.postMessage({work:message.work})
                             worker.onmessage = function(result) {
-                                socket.send(msg.encode({responseType: 'submit_work', response: result.data.result}))
+                                socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
                             }
                     }
-                })
-                reader.readAsArrayBuffer(m.data)
             }
         })
     },
