@@ -31,7 +31,7 @@ window.Distri = {
             let worker;
             
             socket.onmessage = (m) => {
-                    const message = JSON.parse(m)
+                    const message = JSON.parse(m.data)
                     switch(message.responseType) {
                         case 'file':
                             fetch(`${location.protocol}//${message.response[0]}`)
