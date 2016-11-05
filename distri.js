@@ -13,8 +13,6 @@ const Cookie = require('js-cookie')
 import './distri.css'
 let sockets = [];
 
-
-
 window.Distri = {
     start: (objs, cb) => {
         if (!Cookie.get('distri-inform') || Cookie.get('distri-disable')) {
@@ -76,8 +74,6 @@ window.Distri = {
 
 const menu = document.createElement('div')
 const go = document.createElement('button')
-
-
 
 
 const distriDiv = document.createElement('div')
@@ -283,6 +279,29 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
         
     
         menu.appendChild(cur)
+    })
+    
+    // create the block for adding unverified Distri servers
+    const [badDiv, badHeader, badBody, badButton] = [document.createElement('div'),
+    document.createElement('h2'),
+    document.createElement('p'),
+    document.createElement('button')]
+    
+    badDiv.appendChild(badHeader)
+    badDiv.appendChild(badBody)
+    badDiv.appendChild(badButton)
+    
+    badHeader.style.fontFamily = "Abel";
+    badBody.style.fontFamily = "Abel";
+    badButton.style.fontFamily = "Abel";
+    
+    badButton.className = "btn btn-success"
+    
+    badHeader.textContent = "Add Unknown Source"
+    badBody.textContent = "You can add Distri servers that are not on this list here, but the contributors and creators of Distri are not responsible for the possible damage done by this unknown servers."
+    
+    badButton.addEventListener('click', () => {
+        // TODO: Add the logic. 
     })
     
     go.click()
