@@ -1,13 +1,22 @@
 /* global fetch URL location distriDefault Blob Distri */
 
+"use strict"
+
 if(!window.Crypto && !window.msCrypto) throw new Error('Browser does not support cryptographic functions')
 const crypto = window.crypto.subtle || window.msCrypto
 if (!window.Worker) throw new Error('Browser does not support Web Workers')
 if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not support binary blobs')
 
-const conversion = require('base64-arraybuffer')
+// This module converts Base64 encoded strings into ArrayBuffers, and vice versa
+const conversion = require('base64-arraybuffer') 
+
+// This module tests if two or more ArrayBuffers are equal
 const arrEqual = require('arraybuffer-equal')
+
+// This module uses the hashcash algorithm for proof of work
 const hashcash = require('hashcashgen')
+
+// This module just abstracts over the document.cookie API
 const Cookie = require('js-cookie')
 
 import './distri.css'
@@ -15,32 +24,60 @@ let sockets = [];
 
 window.Distri = {
     start: (objs, cb) => {
+        /* 
+            * If the user has not been informed of Distri being on the website, or the user has opted
+            * out of Distri, exit the function immediatly.
+        */
         if (!Cookie.get('distri-inform') || Cookie.get('distri-disable')) {
             return;
         }
         objs.map(obj => {
+            /*
+                * A WebSocket will be refused if protocols conflict. For example, if the user connected to the
+                * website using HTTP, and the user connects to a WebSocket server using WSS, the server will
+                * refuse the connection because the client is on an insecure protocol. If a user connected to the 
+                * website using HTTPS and tries to connect to a WebSocket server using WS, the browser will refuse
+                * the connection because the server is using an insecure protocol. However, if both are secure (HTTPS and WSS)
+                * or both are insecure (HTTP and WS), the client and server will work properly.
+                * The conditional below just checks everything out.
+            */
             const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
             socket.onopen = () => {
                 socket.send(JSON.stringify({responseType:'request',response:['javascript']}))
             }
             
+            // This is where the WebWorker will be stored for this server
             let worker;
             
             socket.onmessage = (m) => {
                     const message = JSON.parse(m.data)
+                    
+                    // Distri tells the user what is getting from the responseType field
                     switch(message.responseType) {
                         case 'file':
                             switch(message.response[1]) {
                                 case "javascript":
+                                    // location.protocol trick used again
                                     fetch(`${location.protocol}//${message.response[0]}`)
                                     .then(result => result.arrayBuffer())
                                     .then(result => {
+                                        // put the resulting file through the SHA-512 hashing algorithm
                                         crypto.digest('SHA-512', result)
                                             .then(hash => {
+                                                /*
+                                                    * If the user entered the server in manually through the Add Server
+                                                    * button, the server object will not have any hashes, and will be run anyway. 
+                                                    * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
+                                                    * which the below code decodes to an ArrayBuffer, and checks to see if the
+                                                    * hash from the object is the same from the hash generated from the file served to the user.
+                                                    * It's a checksum, to be short. If they are the same, the file is trusted and can be run
+                                                */
                                                 if ((!obj.hashes) || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
                                                     worker = new Worker(URL.createObjectURL(new Blob([result])))
                                                     cb(socket, worker)
                                                     socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
+                                                } else {
+                                                    console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
                                                 }
                                             })
                                         
@@ -51,12 +88,15 @@ window.Distri = {
                             }
             
                             break;
+                            
+                        // The user is recieving a hash to calcalate. This prevents users from spamming the server
                         case "submit_hash":
                             socket.send(JSON.stringify({responseType: 'submit_hash', response: hashcash(message.response[0], message.response[1])}))
                             break;
+                        // This is where the user actually gets work. It is sent to the worker made in the "file" case and awaits a message
                         case 'submit_work':
                             worker.postMessage({work:message.work})
-                            worker.onmessage = function(result) {
+                            worker.onmessage = (result) => {
                                 socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
                             }
                     }
@@ -64,6 +104,7 @@ window.Distri = {
         })
     },
     settings: () => {
+        // Just fades the DistriDiv in
         distriDiv.className = 'fadein'
         const complete = () => {
                 distriDiv.style.opacity = '1'
@@ -76,6 +117,8 @@ window.Distri = {
     
 }
 
+
+
 const menu = document.createElement('div')
 const go = document.createElement('button')
 
@@ -85,6 +128,7 @@ distriDiv.id = 'distriDiv'
 
 document.body.appendChild(distriDiv)
 
+// Object.assign is used for styling as it only overwrites style properties that are in the second object
 Object.assign(distriDiv.style, {
     opacity: '0',
     width: '650px',
@@ -122,8 +166,8 @@ Object.assign(go.style, {
 go.textContent = 'Finish'
 go.className = 'btn btn-primary'
 
-const [saveButton, resetButton, addButton] = [document.createElement('button'), document.createElement('button'), document.createElement('button')]
-
+// Creates three buttons
+const [saveButton, resetButton, addButton] = [document.createElement("button"),document.createElement("button"),document.createElement("button")]
 const btnStyle = {
     height: "40px",
     margin: "10px 5px 5px 5px",
@@ -160,6 +204,7 @@ centerify.appendChild(go)
 distriDiv.appendChild(centerify)
 
 go.onclick = (e) => {
+    // If go was not clicked using the go.click() function
     if ((e.x !== 0 && e.y !== 0)) {
         distriDiv.className = 'fadeout'
         const complete = () => {
@@ -170,6 +215,7 @@ go.onclick = (e) => {
         distriDiv.addEventListener('oanimationend', complete)
     }
     
+    // Close all existing sockets
     sockets.map(socket => {
         socket.socket.close()
         socket.worker.terminate()
@@ -182,17 +228,22 @@ go.onclick = (e) => {
 }
 
 
-
+// Load from the cookies the saved preferences of the user
 const using = Cookie.get('distri-save') ? Cookie.getJSON('distri-save') : []
 
+// Save to the cookies the preferences of the user
 saveButton.onclick = () => {
     Cookie.set('distri-save',JSON.stringify(using),{expires: 365})
 }
 
 resetButton.onclick = () => {
+    // The children of a DOM element are in an array-like object, but not an array. The below function converts it
     Array.from(menu.children).map(child => {
+        // Set all buttons to their original state
         child.children[0].children[3].className = 'btn btn-success'
         child.children[0].children[3].textContent = '+'
+        
+        // Remove all servers from the using array.
         const ind = using.map(obj => obj.title).indexOf(child.children[0].children[1].textContent)
         if (ind !== -1) using.splice(ind, 1)
     })
@@ -200,12 +251,15 @@ resetButton.onclick = () => {
 
 addButton.onclick = () => {
     
+    // Create a div to be put inside the menu
     const [informDiv, informHeader, informBody, informInput, informButton] = [
         document.createElement("div"),
         document.createElement("h2"),
         document.createElement("p"),
         document.createElement("input"),
         document.createElement("button")]
+        
+    // Use the method the menu div does to place div's in a 3 per row fashion
     const place = Array.from(menu.children).length
     Object.assign(informDiv.style, {
         width: '200px',
@@ -258,6 +312,7 @@ addButton.onclick = () => {
     menu.appendChild(informDiv)
 }
 
+// This is where all the public and verified servers are stored
 fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json`).then(result => result.json())
 .then(result => {
     result.map((obj, ind) => {
@@ -281,6 +336,7 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
     center.appendChild(curBody)
     center.appendChild(curButton)
     center.appendChild(filler)
+    // Tile each server div so that it fits three per row
     Object.assign(cur.style, {
         width: '200px',
         height: `300px`,
@@ -306,6 +362,7 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
     
     curButton.onclick = () => {
         let state = curButton.textContent
+        // check the buttons text content to see if a server is added or not
         switch(state) {
             case '+':
                 curButton.className = 'btn btn-danger'
@@ -322,6 +379,7 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
         
     }
     
+    // If the website has designed this server to be default, or the user has saved this server
     if ((obj.title === distriDefault && using.length === 0 && using.indexOf(obj.title) === -1) || (using.indexOf(obj.title) !== -1)) 
         curButton.click()
         
@@ -332,6 +390,7 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
     go.click()
 })
 
+// If the user has not been informed that Distri is running on their computer
 if (!Cookie.get('distri-inform')) {
     
     const inform = document.createElement('div')
@@ -362,29 +421,19 @@ if (!Cookie.get('distri-inform')) {
     informCenter.appendChild(text)
     text.style.fontFamily = "Abel"
     text.textContent = "This website has background distributed computing enabled, powered by Distri-JS. Distri-JS uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'."
-    const okay = document.createElement('button')
-    const options = document.createElement('button')
-    const disable = document.createElement('button')
-    Object.assign(disable.style, {
+    const [okay, options, disable] = [document.createElement("button"),document.createElement("button"),document.createElement("button")]
+    const informBtnStyle = {
         fontFamily: 'Abel',
         position: 'relative',
         display: 'inline-block',
         margin: '5px 5px 5px 5px'
-    })
+    }    
     
-    Object.assign(options.style, {
-        fontFamily: 'Abel',
-        position: 'relative',
-        display: 'inline-block',
-        margin: '5px 5px 5px 5px'
-    })
+    Object.assign(disable.style, informBtnStyle)
     
-    Object.assign(okay.style, {
-        fontFamily: 'Abel',
-        position: 'relative',
-        display: 'inline-block',
-        margin: '5px 5px 5px 5px'
-    })
+    Object.assign(options.style, informBtnStyle)
+    
+    Object.assign(okay.style, informBtnStyle)
     
     okay.textContent = 'OK'
     options.textContent = 'Options'
@@ -446,4 +495,6 @@ if (!Cookie.get('distri-inform')) {
     inform.addEventListener('oanimationend', complete, {once:true})
     
 }
+
+console.log(using)
 
