@@ -27,3 +27,5 @@ Another note, if you want to set a default starting point other than ```Collatz 
 ## Personal thank you's
 
 Thank you _Emily Doyle_ for helping spread the word for this!
+
+Uses components from Bootstrap. You can find it [https://github.com/twbs/bootstrap/blob/v4-dev/dist/css/bootstrap.css](here). Bootstrap is under the MIT license.

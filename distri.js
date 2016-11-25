@@ -20,9 +20,8 @@ window.Distri = {
         }
         objs.map(obj => {
             const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
-
             socket.onopen = () => {
-                
+                console.log("open")
                 socket.send(JSON.stringify({responseType:'request',response:['javascript']}))
             }
             
@@ -32,19 +31,25 @@ window.Distri = {
                     const message = JSON.parse(m.data)
                     switch(message.responseType) {
                         case 'file':
-                            fetch(`${location.protocol}//${message.response[0]}`)
-                            .then(result => result.arrayBuffer())
-                            .then(result => {
-                                crypto.digest('SHA-512', result)
-                                    .then(hash => {
-                                        if (arrEqual(conversion.decode(obj.hashes.javascript), hash)) {
-                                            worker = new Worker(URL.createObjectURL(new Blob([result])))
-                                            cb(socket, worker)
-                                            socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
-                                        }
+                            switch(message.response[1]) {
+                                case "javascript":
+                                    fetch(`${location.protocol}//${message.response[0]}`)
+                                    .then(result => result.arrayBuffer())
+                                    .then(result => {
+                                        crypto.digest('SHA-512', result)
+                                            .then(hash => {
+                                                if ((!obj.hashes) || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
+                                                    worker = new Worker(URL.createObjectURL(new Blob([result])))
+                                                    cb(socket, worker)
+                                                    socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
+                                                }
+                                            })
+                                        
                                     })
-                                
-                            })
+                                break;
+                                case "webassembly":
+                                    // Once WebAssembly is standardized, this will be filled in
+                            }
             
                             break;
                         case "submit_hash":
@@ -62,12 +67,12 @@ window.Distri = {
     settings: () => {
         distriDiv.className = 'fadein'
         const complete = () => {
-            distriDiv.style.opacity = '1'
-            distriDiv.style.margin = '-275px 0 0 -325px'
+                distriDiv.style.opacity = '1'
+                distriDiv.style.margin = '-275px 0 0 -325px'
         }
-        distriDiv.addEventListener('webkitAnimationEnd', complete, {once:true})
-        distriDiv.addEventListener('animationend', complete, {once:true})
-        distriDiv.addEventListener('oanimationend', complete, {once:true})
+        distriDiv.addEventListener('webkitAnimationEnd', complete)
+        distriDiv.addEventListener('animationend', complete)
+        distriDiv.addEventListener('oanimationend', complete)
     }
     
 }
@@ -78,6 +83,8 @@ const go = document.createElement('button')
 
 const distriDiv = document.createElement('div')
 distriDiv.id = 'distriDiv'
+
+document.body.appendChild(distriDiv)
 
 Object.assign(distriDiv.style, {
     opacity: '0',
@@ -113,70 +120,55 @@ Object.assign(go.style, {
     fontFamily: 'Abel'
 })
 
-go.textContent = 'Go!'
+go.textContent = 'Finish'
 go.className = 'btn btn-primary'
 
-const [saveButton, resetButton] = [document.createElement('button'), document.createElement('button')]
+const [saveButton, resetButton, addButton] = [document.createElement('button'), document.createElement('button'), document.createElement('button')]
 
-Object.assign(saveButton.style, {
-    width: '60px',
-    height: '40px',
+const btnStyle = {
+    height: "40px",
+    margin: "10px 5px 5px 5px",
     borderRadius: '10%',
     position: 'relative',
     top: '20px',
-    marginBottom: '10px',
     right: '10px',
     fontFamily: 'Abel'
-})
+}
 
-Object.assign(resetButton.style, {
-    width: '60px',
-    height: '40px',
-    borderRadius: '10%',
-    position: 'relative',
-    top: '20px',
-    marginBottom: '10px',
-    fontFamily: 'Abel'
-})
+Object.assign(saveButton.style, btnStyle)
+
+Object.assign(resetButton.style, btnStyle)
+
+Object.assign(addButton.style, btnStyle)
+
+
 
 resetButton.className = 'btn btn-danger'
 saveButton.className = 'btn btn-success'
+addButton.className = 'btn btn-warning'
 
 resetButton.textContent = 'Reset'
 saveButton.textContent = 'Save'
+addButton.textContent = 'Add Server'
 
 const centerify = document.createElement('center')
 centerify.appendChild(menu)
 centerify.appendChild(saveButton)
 centerify.appendChild(resetButton)
+centerify.appendChild(addButton)
 centerify.appendChild(document.createElement('br'))
 centerify.appendChild(go)
 distriDiv.appendChild(centerify)
 
-window.onclick = (e) => {
-    if (e.target !== distriDiv && distriDiv.style.opacity === '1' && !distriDiv.contains(e.target)) {
-        distriDiv.className = 'fadeout'
-        const complete = () => {
-            distriDiv.style.opacity = '0'
-            distriDiv.style.margin = '-650px 0 0 -325px'
-        }
-        distriDiv.addEventListener('webkitAnimationEnd', complete, {once:true})
-        distriDiv.addEventListener('animationend', complete, {once:true})
-        distriDiv.addEventListener('oanimationend', complete, {once:true})
-    }
-        
-}
-
 go.onclick = (e) => {
-    if (e.x !== 0 && e.y !== 0) {
+    if ((e.x !== 0 && e.y !== 0)) {
         distriDiv.className = 'fadeout'
         const complete = () => {
-            distriDiv.style.opacity = '0'
-            distriDiv.style.margin = '-650px 0 0 -325px'
+            distriDiv.style.margin = '-1200px 0 0 -325px'
         }
-        distriDiv.addEventListener('webkitAnimationEnd', complete, {once:true})
-        distriDiv.addEventListener('animationend', complete, {once:true})
-        distriDiv.addEventListener('oanimationend', complete, {once:true})
+        distriDiv.addEventListener('webkitAnimationEnd', complete)
+        distriDiv.addEventListener('animationend', complete)
+        distriDiv.addEventListener('oanimationend', complete)
     }
     
     sockets.map(socket => {
@@ -184,15 +176,13 @@ go.onclick = (e) => {
         socket.worker.terminate()
     })
     
-    Distri.start(using, function(socket, worker) {
+    Distri.start(using, (socket, worker) => {
         sockets.push({socket,worker})
     })
-    
+ 
 }
 
 
-
-document.body.appendChild(distriDiv)
 
 const using = Cookie.get('distri-save') ? Cookie.getJSON('distri-save') : []
 
@@ -207,6 +197,66 @@ resetButton.onclick = () => {
         const ind = using.map(obj => obj.title).indexOf(child.children[0].children[1].textContent)
         if (ind !== -1) using.splice(ind, 1)
     })
+}
+
+addButton.onclick = () => {
+    
+    const [informDiv, informHeader, informBody, informInput, informButton] = [
+        document.createElement("div"),
+        document.createElement("h2"),
+        document.createElement("p"),
+        document.createElement("input"),
+        document.createElement("button")]
+    const place = Array.from(menu.children).length
+    Object.assign(informDiv.style, {
+        width: '200px',
+        height: `300px`,
+        position: 'absolute',
+        left: `${200*(place%3)}px`,
+        top: `${300*Math.floor(place/3)}px`,
+        display: 'inline-block',
+        fontFamily: "Abel"
+    })
+    
+    informButton.className = "btn btn-danger"
+    informButton.textContent = "-"
+    Object.assign(informButton.style, {
+        width: '30px',
+        height: '30px',
+        borderRadius: '25%',
+        padding: '0px 0px'
+    })
+    
+    let url;
+    
+    informButton.addEventListener("click", () => {
+        if (informButton.textContent === "-") {
+            using.splice(using.indexOf({url}), 1)
+            informButton.textContent = "+"
+            informButton.className = "btn btn-success"
+        } else {
+            using.push({url})
+            informButton.textContent = "-"
+            informButton.className = "btn btn-danger"
+        }
+    })
+    
+    
+    informHeader.textContent = "Add External Server"
+    informBody.textContent = "WARNING: You are adding a server not trusted by the Distri list. This could result in damage to your computer if the script is malicious. Distri has no responsbility for these scripts, so run at your own risk."
+    informDiv.appendChild(informHeader)
+    informDiv.appendChild(informBody)
+    informDiv.appendChild(informInput)
+    informInput.placeholder = "Enter link here"
+    informInput.addEventListener("keyup", (e) => {
+        if (e.keyCode === 13) {
+            url = informInput.value
+            using.push({url})
+            informInput.remove()
+            informDiv.appendChild(informButton)
+        }
+    })
+    menu.appendChild(informDiv)
 }
 
 fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json`).then(result => result.json())
@@ -273,36 +323,12 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
         
     }
     
-    if ((obj.title === distriDefault && using.length === 0) || (using.indexOf(obj.title) !== -1)) 
+    if ((obj.title === distriDefault && using.length === 0 && using.indexOf(obj.title) === -1) || (using.indexOf(obj.title) !== -1)) 
         curButton.click()
         
-        
-    
         menu.appendChild(cur)
     })
     
-    // create the block for adding unverified Distri servers
-    const [badDiv, badHeader, badBody, badButton] = [document.createElement('div'),
-    document.createElement('h2'),
-    document.createElement('p'),
-    document.createElement('button')]
-    
-    badDiv.appendChild(badHeader)
-    badDiv.appendChild(badBody)
-    badDiv.appendChild(badButton)
-    
-    badHeader.style.fontFamily = "Abel";
-    badBody.style.fontFamily = "Abel";
-    badButton.style.fontFamily = "Abel";
-    
-    badButton.className = "btn btn-success"
-    
-    badHeader.textContent = "Add Unknown Source"
-    badBody.textContent = "You can add Distri servers that are not on this list here, but the contributors and creators of Distri are not responsible for the possible damage done by this unknown servers."
-    
-    badButton.addEventListener('click', () => {
-        // TODO: Add the logic. 
-    })
     
     go.click()
 })
@@ -421,3 +447,4 @@ if (!Cookie.get('distri-inform')) {
     inform.addEventListener('oanimationend', complete, {once:true})
     
 }
+

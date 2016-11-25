@@ -21,6 +21,7 @@
     from {opacity:1;margin:-275px 0 0 -325px;} to {opacity:0;margin:-650px 0 0 -325px;}
 }
 
+
 .fadein {
     animation-name: fadein;
     animation-timing-function: ease;
@@ -236,4 +237,49 @@
 .btn-danger.disabled:hover, .btn-danger:disabled:hover {
   background-color: #d9534f;
   border-color: #d9534f;
+}
+
+.btn-warning {
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #f0ad4e;
+}
+
+.btn-warning:hover {
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #eb9316;
+}
+
+.btn-warning:focus, .btn-warning.focus {
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #eb9316;
+}
+
+.btn-warning:active, .btn-warning.active,
+.open > .btn-warning.dropdown-toggle {
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #eb9316;
+  background-image: none;
+}
+
+.btn-warning:active:hover, .btn-warning:active:focus, .btn-warning:active.focus, .btn-warning.active:hover, .btn-warning.active:focus, .btn-warning.active.focus,
+.open > .btn-warning.dropdown-toggle:hover,
+.open > .btn-warning.dropdown-toggle:focus,
+.open > .btn-warning.dropdown-toggle.focus {
+  color: #fff;
+  background-color: #d58512;
+  border-color: #b06d0f;
+}
+
+.btn-warning.disabled:focus, .btn-warning.disabled.focus, .btn-warning:disabled:focus, .btn-warning:disabled.focus {
+  background-color: #f0ad4e;
+  border-color: #f0ad4e;
+}
+
+.btn-warning.disabled:hover, .btn-warning:disabled:hover {
+  background-color: #f0ad4e;
+  border-color: #f0ad4e;
 }
