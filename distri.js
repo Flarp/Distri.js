@@ -21,7 +21,6 @@ window.Distri = {
         objs.map(obj => {
             const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
             socket.onopen = () => {
-                console.log("open")
                 socket.send(JSON.stringify({responseType:'request',response:['javascript']}))
             }
             
