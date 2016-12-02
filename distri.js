@@ -117,6 +117,11 @@ window.Distri = {
     
 }
 
+window.onload = () => {
+    document.body.appendChild(distriDiv)
+    checkInformed()
+}
+
 
 
 const menu = document.createElement('div')
@@ -126,7 +131,6 @@ const go = document.createElement('button')
 const distriDiv = document.createElement('div')
 distriDiv.id = 'distriDiv'
 
-document.body.appendChild(distriDiv)
 
 // Object.assign is used for styling as it only overwrites style properties that are in the second object
 Object.assign(distriDiv.style, {
@@ -391,110 +395,110 @@ fetch(`${location.protocol}//raw.githubusercontent.com/Flarp/Distri-Safe/master/
 })
 
 // If the user has not been informed that Distri is running on their computer
-if (!Cookie.get('distri-inform')) {
+const checkInformed = () => {
+    if (!Cookie.get('distri-inform')) {
     
-    const inform = document.createElement('div')
-    Object.assign(inform.style, {
-        top: '50%',
-        left: "50%",
-        width: '500px',
-        height: '300px',
-        borderRadius: '10px',
-        borderColor: 'grey',
-        borderWidth: '1px',
-        borderStyle: 'solid',
-        backgroundColor: 'white',
-        position: 'absolute',
-        boxShadow: '10px 10px 5px grey',
-        overflow: 'auto',
-        textAlign: 'center',
-        opacity: '0',
-        margin: '-150px 0 0 -250px'
-    })
-    
-    const distriDisclaimer = document.createElement('h1')
-    distriDisclaimer.textContent = 'Distri-JS Disclaimer'
-    inform.appendChild(distriDisclaimer)
-    distriDisclaimer.style.fontFamily = "Abel"
-    const text = document.createElement('p')
-    const informCenter = document.createElement('center')
-    informCenter.appendChild(text)
-    text.style.fontFamily = "Abel"
-    text.textContent = "This website has background distributed computing enabled, powered by Distri-JS. Distri-JS uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'."
-    const [okay, options, disable] = [document.createElement("button"),document.createElement("button"),document.createElement("button")]
-    const informBtnStyle = {
-        fontFamily: 'Abel',
-        position: 'relative',
-        display: 'inline-block',
-        margin: '5px 5px 5px 5px'
-    }    
-    
-    Object.assign(disable.style, informBtnStyle)
-    
-    Object.assign(options.style, informBtnStyle)
-    
-    Object.assign(okay.style, informBtnStyle)
-    
-    okay.textContent = 'OK'
-    options.textContent = 'Options'
-    disable.textContent = 'Disable'
-    okay.className = 'btn btn-success'
-    disable.className = 'btn btn-danger'
-    options.className = 'btn btn-primary'
-    
-    okay.onclick = () => {
-        Cookie.set('distri-inform', 'true', {expires:365})
-        go.click()
-        inform.className = 'inform-fadeout'
-        inform.addEventListener('webkitAnimationEnd', inform.remove, {once:true})
-        inform.addEventListener('animationend', inform.remove, {once:true})
-        inform.addEventListener('oanimationend', inform.remove, {once:true})
-    }
-    
-    disable.onclick = () => {
-        Cookie.set('distri-inform', 'true', {expires:365})
-        inform.className = 'inform-fadeout'
-        inform.addEventListener('webkitAnimationEnd', inform.remove, {once:true})
-        inform.addEventListener('animationend', inform.remove, {once:true})
-        inform.addEventListener('oanimationend', inform.remove, {once:true})
-        resetButton.click()
-        saveButton.click()
-        go.click()
-        Cookie.set('distri-disable', true, {expires:365})
-    }
-    
-    options.onclick = () => {
-        Cookie.set('distri-inform', 'true', {expires:365})
-        inform.className = 'inform-fadeout'
-        const optionsFunc = () => {
-            inform.remove()
-            Distri.settings()
+        const inform = document.createElement('div')
+        Object.assign(inform.style, {
+            top: '50%',
+            left: "50%",
+            width: '500px',
+            height: '300px',
+            borderRadius: '10px',
+            borderColor: 'grey',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            backgroundColor: 'white',
+            position: 'absolute',
+            boxShadow: '10px 10px 5px grey',
+            overflow: 'auto',
+            textAlign: 'center',
+            opacity: '0',
+            margin: '-150px 0 0 -250px'
+        })
+        
+        const distriDisclaimer = document.createElement('h1')
+        distriDisclaimer.textContent = 'Distri-JS Disclaimer'
+        inform.appendChild(distriDisclaimer)
+        distriDisclaimer.style.fontFamily = "Abel"
+        const text = document.createElement('p')
+        const informCenter = document.createElement('center')
+        informCenter.appendChild(text)
+        text.style.fontFamily = "Abel"
+        text.textContent = "This website has background distributed computing enabled, powered by Distri-JS. Distri-JS uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'."
+        const [okay, options, disable] = [document.createElement("button"),document.createElement("button"),document.createElement("button")]
+        const informBtnStyle = {
+            fontFamily: 'Abel',
+            position: 'relative',
+            display: 'inline-block',
+            margin: '5px 5px 5px 5px'
+        }    
+        
+        Object.assign(disable.style, informBtnStyle)
+        
+        Object.assign(options.style, informBtnStyle)
+        
+        Object.assign(okay.style, informBtnStyle)
+        
+        okay.textContent = 'OK'
+        options.textContent = 'Options'
+        disable.textContent = 'Disable'
+        okay.className = 'btn btn-success'
+        disable.className = 'btn btn-danger'
+        options.className = 'btn btn-primary'
+        
+        okay.onclick = () => {
+            Cookie.set('distri-inform', 'true', {expires:365})
+            go.click()
+            inform.className = 'inform-fadeout'
+            inform.addEventListener('webkitAnimationEnd', inform.remove, {once:true})
+            inform.addEventListener('animationend', inform.remove, {once:true})
+            inform.addEventListener('oanimationend', inform.remove, {once:true})
         }
-        inform.addEventListener('webkitAnimationEnd', optionsFunc, {once:true})
-        inform.addEventListener('animationend', optionsFunc, {once:true})
-        inform.addEventListener('oanimationend', optionsFunc, {once:true})
-    }
-    
-    const buttonCenter = document.createElement('center')
-    buttonCenter.style.display = 'block'
-    buttonCenter.appendChild(okay)
-    buttonCenter.appendChild(disable)
-    buttonCenter.appendChild(options)
-    
-    document.body.appendChild(inform)
-    inform.appendChild(informCenter)
-    inform.appendChild(buttonCenter)
-    
-    const complete = () => {
-            inform.style.opacity = '1'
-            inform.style.margin = '-150px 0 0 -250px'
+        
+        disable.onclick = () => {
+            Cookie.set('distri-inform', 'true', {expires:365})
+            inform.className = 'inform-fadeout'
+            inform.addEventListener('webkitAnimationEnd', inform.remove, {once:true})
+            inform.addEventListener('animationend', inform.remove, {once:true})
+            inform.addEventListener('oanimationend', inform.remove, {once:true})
+            resetButton.click()
+            saveButton.click()
+            go.click()
+            Cookie.set('distri-disable', true, {expires:365})
         }
-    inform.className = 'inform-fadein'
-    inform.addEventListener('webkitAnimationEnd', complete, {once:true})
-    inform.addEventListener('animationend', complete, {once:true})
-    inform.addEventListener('oanimationend', complete, {once:true})
-    
+        
+        options.onclick = () => {
+            Cookie.set('distri-inform', 'true', {expires:365})
+            inform.className = 'inform-fadeout'
+            const optionsFunc = () => {
+                inform.remove()
+                Distri.settings()
+            }
+            inform.addEventListener('webkitAnimationEnd', optionsFunc, {once:true})
+            inform.addEventListener('animationend', optionsFunc, {once:true})
+            inform.addEventListener('oanimationend', optionsFunc, {once:true})
+        }
+        
+        const buttonCenter = document.createElement('center')
+        buttonCenter.style.display = 'block'
+        buttonCenter.appendChild(okay)
+        buttonCenter.appendChild(disable)
+        buttonCenter.appendChild(options)
+        
+        document.body.appendChild(inform)
+        inform.appendChild(informCenter)
+        inform.appendChild(buttonCenter)
+        
+        const complete = () => {
+                inform.style.opacity = '1'
+                inform.style.margin = '-150px 0 0 -250px'
+            }
+        inform.className = 'inform-fadein'
+        inform.addEventListener('webkitAnimationEnd', complete, {once:true})
+        inform.addEventListener('animationend', complete, {once:true})
+        inform.addEventListener('oanimationend', complete, {once:true})
+        
+    }
 }
-
-console.log(using)
 
