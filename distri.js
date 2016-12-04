@@ -117,11 +117,9 @@ window.Distri = {
     
 }
 
-window.onload = () => {
-    document.body.appendChild(distriDiv)
-    checkInformed()
-}
-
+const Abel = document.createElement("link")
+Abel.rel = "stylesheet"
+Abel.href = "https://fonts.googleapis.com/css?family=Abel"
 
 
 const menu = document.createElement('div')
@@ -502,3 +500,6 @@ const checkInformed = () => {
     }
 }
 
+document.body.appendChild(distriDiv)
+document.body.appendChild(Abel)
+checkInformed()
