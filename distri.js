@@ -235,7 +235,11 @@ const using = Cookie.get('distri-save') ? Cookie.getJSON('distri-save') : []
 
 // Save to the cookies the preferences of the user
 saveButton.onclick = () => {
-    Cookie.set('distri-save',JSON.stringify(using),{expires: 365})
+    const hashStrip = using.map(item => {
+        delete item.hashes
+        return item
+    })
+    Cookie.set('distri-save',JSON.stringify(hashStrip),{expires: 365})
 }
 
 resetButton.onclick = () => {
