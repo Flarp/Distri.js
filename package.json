@@ -29,5 +29,5 @@
     "postInstall": "./node_modules/webpack/bin/webpack"
   },
   "author": "",
-  "license": "BSD-3-Clause"
+  "license": "GPL-3.0"
 }
