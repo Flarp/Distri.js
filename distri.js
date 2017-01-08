@@ -246,11 +246,13 @@ resetButton.onclick = () => {
 
 addButton.onclick = () => {
     // Create a div to be put inside the menu
-  const [informDiv, informHeader, informBody, informInput, informButton] = [
+  const [informDiv, informHeader, informBody, informInput, addButton, filler, removeButton] = [
     document.createElement('div'),
     document.createElement('h2'),
     document.createElement('p'),
     document.createElement('input'),
+    document.createElement('button'),
+    document.createElement('p'),
     document.createElement('button')]
 
     // Use the method the menu div does to place div's in a 3 per row fashion
@@ -265,29 +267,59 @@ addButton.onclick = () => {
     fontFamily: 'Abel'
   })
 
-  informButton.className = 'btn btn-danger'
-  informButton.textContent = '-'
-  Object.assign(informButton.style, {
-    width: '30px',
-    height: '30px',
-    borderRadius: '25%',
-    padding: '0px 0px'
-  })
 
-  let url
+  let url, ind
 
-  informButton.addEventListener('click', () => {
-    if (informButton.textContent === '-') {
-      using.splice(using.indexOf({url}), 1)
-      informButton.textContent = '+'
-      informButton.className = 'btn btn-success'
+  addButton.className = 'btn btn-success'
+  removeButton.className = 'btn btn-danger'
+  addButton.textContent = '+'
+  removeButton.textContent = '-'
+
+  Object.assign(addButton.style, {
+      textAlign: 'center',
+      width: '30px',
+      height: '30px',
+      borderRadius: '25%',
+      padding: '0px 0px',
+      display: 'inline-flex',
+      justifyContent: 'center'
+    })
+
+    Object.assign(filler.style, {
+      fontFamily: 'Abel',
+      paddingLeft: '5px',
+      paddingRight: '5px',
+      display: 'inline-flex'
+    })
+
+    Object.assign(removeButton.style, {
+      textAlign: 'center',
+      width: '30px',
+      height: '30px',
+      borderRadius: '25%',
+      padding: '0px 0px',
+      display: 'inline-flex',
+      justifyContent: 'center'
+    })
+
+   addButton.onclick = (e) => {
+    if (usableCores === 0) return
+    usableCores--
+    using[ind].cores++
+    filler.textContent = using[ind].cores
+  }
+  
+  removeButton.onclick = (e) => {
+    if (using[ind].cores === 0) {
+      return
     } else {
-      using.push({url})
-      informButton.textContent = '-'
-      informButton.className = 'btn btn-danger'
+      using[ind].cores--
+      usableCores++
+      filler.textContent = using[ind].cores
     }
-  })
-
+    
+  }
+    
   informHeader.textContent = 'Add External Server'
   informBody.textContent = 'WARNING: You are adding a server not trusted by the Distri list. This could result in damage to your computer if the script is malicious. Distri has no responsbility for these scripts, so run at your own risk.'
   informDiv.appendChild(informHeader)
@@ -297,9 +329,12 @@ addButton.onclick = () => {
   informInput.addEventListener('keyup', (e) => {
     if (e.keyCode === 13) {
       url = informInput.value
-      using.push({url})
+      ind = using.push({url,cores:1})-1
+      filler.textContent = using[ind].cores
       informInput.remove()
-      informDiv.appendChild(informButton)
+      informDiv.appendChild(addButton)
+      informDiv.appendChild(filler)
+      informDiv.appendChild(removeButton)
     }
   })
   menu.appendChild(informDiv)
@@ -308,8 +343,11 @@ addButton.onclick = () => {
 const removeButtons = []
 let usableCores = window.navigator.hardwareConcurrency
 
-fetch(`${location.protocol}//${distriSafeDatabase}`).then(result => result.json())
-.then(result => {
+Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${database}`))))
+.then(results => Promise.all(results.map(result => result.json())))
+.then(results => {
+  const result = []
+  results.map(database => database.map(item => result.push(item)))
   result.map((obj, ind) => {
     using[ind] = obj
     
@@ -358,7 +396,8 @@ fetch(`${location.protocol}//${distriSafeDatabase}`).then(result => result.json(
       height: '30px',
       borderRadius: '25%',
       padding: '0px 0px',
-      display: 'inline-flex'
+      display: 'inline-flex',
+      justifyContent: 'center'
     })
 
     Object.assign(filler.style, {
@@ -373,7 +412,8 @@ fetch(`${location.protocol}//${distriSafeDatabase}`).then(result => result.json(
       height: '30px',
       borderRadius: '25%',
       padding: '0px 0px',
-      display: 'inline-flex'
+      display: 'inline-flex',
+      justifyContent: 'center'
     })
     
     

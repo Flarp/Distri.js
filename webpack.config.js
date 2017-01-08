@@ -27,7 +27,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       distriDefault: JSON.stringify('Collatz Conjecture'),
-      distriSafeDatabase: JSON.stringify('raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json')
+      distriSafeDatabases: JSON.stringify(['raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json'])
     })
   ]
 }
