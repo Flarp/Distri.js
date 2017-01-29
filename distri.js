@@ -1,4 +1,4 @@
-/* global fetch URL location distriDefault Blob Distri distriSafeDatabase WebSocket Worker */
+/* global fetch URL location distriDefault Blob Distri distriSafeDatabases WebSocket Worker */
 
 'use strict'
 
@@ -6,7 +6,7 @@ if (!window.Crypto && !window.msCrypto) throw new Error('Browser does not suppor
 const crypto = window.crypto.subtle || window.msCrypto
 if (!window.Worker) throw new Error('Browser does not support Web Workers')
 if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not support binary blobs')
-if (!window.navigator) throw new Error("Browser does not support listing computer information")
+if (!window.navigator) throw new Error('Browser does not support listing computer information')
 
 // This module converts Base64 encoded strings into ArrayBuffers, and vice versa
 const conversion = require('base64-arraybuffer')
@@ -50,6 +50,8 @@ window.Distri = {
 
             // This is where the WebWorker will be stored for this server
         let worker
+        let ready = false
+        let workQueue
 
         socket.onmessage = (m) => {
           const message = JSON.parse(m.data)
@@ -57,48 +59,50 @@ window.Distri = {
                     // Distri tells the user what is getting from the responseType field
           switch (message.responseType) {
             case 'file':
-              switch (message.response[1]) {
-                case 'javascript':
-                                    // location.protocol trick used again
-                  fetch(`${location.protocol}//${message.response[0]}`)
-                                    .then(result => result.arrayBuffer())
-                                    .then(result => {
-                                        // put the resulting file through the SHA-512 hashing algorithm
-                                      crypto.digest('SHA-512', result)
-                                            .then(hash => {
-                                                /*
-                                                    * If the user entered the server in manually through the Add Server
-                                                    * button, the server object will not have any hashes, and will be run anyway.
-                                                    * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
-                                                    * which the below code decodes to an ArrayBuffer, and checks to see if the
-                                                    * hash from the object is the same from the hash generated from the file served to the user.
-                                                    * It's a checksum, to be short. If they are the same, the file is trusted and can be run
-                                                */
-                                              if ((!obj.hashes) || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
-                                                worker = new Worker(URL.createObjectURL(new Blob([result])))
-                                                cb(socket, worker)
-                                                socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
-                                              } else {
-                                                console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
-                                              }
-                                            })
-                                    })
-                  break
-                case 'webassembly':
-                                    // Once WebAssembly is standardized, this will be filled in
-              }
-
+              // location.protocol trick used again
+              fetch(`${location.protocol}//${message.response[0]}`)
+              .then(result => result.arrayBuffer())
+              .then(result => {
+                  // put the resulting file through the SHA-512 hashing algorithm
+                crypto.digest('SHA-512', result)
+                      .then(hash => {
+                          /*
+                              * If the user entered the server in manually through the Add Server
+                              * button, the server object will not have any hashes, and will be run anyway.
+                              * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
+                              * which the below code decodes to an ArrayBuffer, and checks to see if the
+                              * hash from the object is the same from the hash generated from the file served to the user.
+                              * It's a checksum, to be short. If they are the same, the file is trusted and can be run
+                          */
+                        if ((!obj.hashes) || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
+                          worker = new Worker(URL.createObjectURL(new Blob([result])))
+                          cb(socket, worker)
+                          socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
+                        } else {
+                          console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
+                        }
+                      })
+              })
               break
-
                         // The user is recieving a hash to calcalate. This prevents users from spamming the server
             case 'submit_hash':
               socket.send(JSON.stringify({responseType: 'submit_hash', response: hashcash(message.response[0], message.response[1])}))
               break
                         // This is where the user actually gets work. It is sent to the worker made in the "file" case and awaits a message
             case 'submit_work':
-              worker.postMessage({work: message.work})
+              if (ready === false) {
+                workQueue = message.work
+              } else {
+                worker.postMessage({work: message.work})
+              }
               worker.onmessage = (result) => {
-                socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
+                if (result.data.result === 'ready') {
+                  ready = true
+                  worker.postMessage({ work: workQueue })
+                  workQueue = undefined
+                } else {
+                  socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
+                }
               }
           }
         }
@@ -225,7 +229,7 @@ go.onclick = (e) => {
 }
 
 // Load from the cookies the saved preferences of the user
-const using = Cookie.get('distri-save') ? Cookie.getJSON('distri-save') : []
+let using = Cookie.get('distri-save') ? Cookie.getJSON('distri-save') : []
 
 // Save to the cookies the preferences of the user
 saveButton.onclick = () => {
@@ -237,11 +241,7 @@ saveButton.onclick = () => {
 }
 
 resetButton.onclick = () => {
-    // The children of a DOM element are in an array-like object, but not an array. The below function converts it
-  Array.from(menu.children).map(child => {
-      // Set all buttons to their original state
-        
-  })
+  using = []
 }
 
 addButton.onclick = () => {
@@ -267,7 +267,6 @@ addButton.onclick = () => {
     fontFamily: 'Abel'
   })
 
-
   let url, ind
 
   addButton.className = 'btn btn-success'
@@ -276,39 +275,38 @@ addButton.onclick = () => {
   removeButton.textContent = '-'
 
   Object.assign(addButton.style, {
-      textAlign: 'center',
-      width: '30px',
-      height: '30px',
-      borderRadius: '25%',
-      padding: '0px 0px',
-      display: 'inline-flex',
-      justifyContent: 'center'
-    })
+    textAlign: 'center',
+    width: '30px',
+    height: '30px',
+    borderRadius: '25%',
+    padding: '0px 0px',
+    display: 'inline-flex',
+    justifyContent: 'center'
+  })
 
-    Object.assign(filler.style, {
-      fontFamily: 'Abel',
-      paddingLeft: '5px',
-      paddingRight: '5px',
-      display: 'inline-flex'
-    })
+  Object.assign(filler.style, {
+    fontFamily: 'Abel',
+    paddingLeft: '5px',
+    paddingRight: '5px',
+    display: 'inline-flex'
+  })
 
-    Object.assign(removeButton.style, {
-      textAlign: 'center',
-      width: '30px',
-      height: '30px',
-      borderRadius: '25%',
-      padding: '0px 0px',
-      display: 'inline-flex',
-      justifyContent: 'center'
-    })
+  Object.assign(removeButton.style, {
+    textAlign: 'center',
+    width: '30px',
+    height: '30px',
+    borderRadius: '25%',
+    padding: '0px 0px',
+    display: 'inline-flex',
+    justifyContent: 'center'
+  })
 
-   addButton.onclick = (e) => {
+  addButton.onclick = (e) => {
     if (usableCores === 0) return
     usableCores--
     using[ind].cores++
     filler.textContent = using[ind].cores
   }
-  
   removeButton.onclick = (e) => {
     if (using[ind].cores === 0) {
       return
@@ -317,9 +315,7 @@ addButton.onclick = () => {
       usableCores++
       filler.textContent = using[ind].cores
     }
-    
   }
-    
   informHeader.textContent = 'Add External Server'
   informBody.textContent = 'WARNING: You are adding a server not trusted by the Distri list. This could result in damage to your computer if the script is malicious. Distri has no responsbility for these scripts, so run at your own risk.'
   informDiv.appendChild(informHeader)
@@ -329,7 +325,7 @@ addButton.onclick = () => {
   informInput.addEventListener('keyup', (e) => {
     if (e.keyCode === 13) {
       url = informInput.value
-      ind = using.push({url,cores:1})-1
+      ind = using.push({url, cores: 1}) - 1
       filler.textContent = using[ind].cores
       informInput.remove()
       informDiv.appendChild(addButton)
@@ -350,9 +346,7 @@ Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${
   results.map(database => database.map(item => result.push(item)))
   result.map((obj, ind) => {
     using[ind] = obj
-    
     using[ind].cores = 0
-    
     const [cur, addButton, removeButton, curHeader, curBody, curImage, center, filler] = [document.createElement('div'),
       document.createElement('button'),
       document.createElement('button'),
@@ -415,22 +409,16 @@ Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${
       display: 'inline-flex',
       justifyContent: 'center'
     })
-    
-    
     filler.textContent = using[ind].cores
-    
     const updateResetState = () => {
-      removeButtons[ind] = ({button:removeButton,cores:using[ind].cores})
-      
+      removeButtons[ind] = ({ button: removeButton, cores: using[ind].cores })
     }
-    
     addButton.onclick = (e) => {
       if (usableCores === 0) return
       usableCores--
       using[ind].cores++
       filler.textContent = using[ind].cores
     }
-    
     removeButton.onclick = (e) => {
       if (using[ind].cores === 0) {
         return
@@ -439,12 +427,7 @@ Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${
         usableCores++
         filler.textContent = using[ind].cores
       }
-      
     }
-    
-    
-    
-
     addButton.className = 'btn btn-success'
     removeButton.className = 'btn btn-danger'
 
