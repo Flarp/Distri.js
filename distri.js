@@ -52,7 +52,6 @@ window.Distri = {
 
         socket.onmessage = (m) => {
           const message = JSON.parse(m.data)
-          console.log(message)
 
                     // Distri tells the user what is getting from the responseType field
           switch (message.responseType) {
@@ -75,12 +74,13 @@ window.Distri = {
                         if ((!obj.hashes) || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
                           worker = new Worker(URL.createObjectURL(new Blob([result])))
                           worker.onmessage = result => {
+                            console.log(result)
                             if (result.data.result === 'ready') {
-                              console.log('pasting')
                               ready = true
-                              worker.postMessage({ work: workQueue })
+                              if (workQueue) {
+                                worker.postMessage({ work: workQueue })
+                              }
                             } else {
-                              console.log('heehee')
                               socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
                             }
                           }
@@ -97,8 +97,6 @@ window.Distri = {
               workQueue = message.work
               if (ready === true) {
                 worker.postMessage({work: message.work})
-              } else {
-                
               }
           }
         }
