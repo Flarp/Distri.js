@@ -14,9 +14,6 @@ const conversion = require('base64-arraybuffer')
 // This module tests if two or more ArrayBuffers are equal
 const arrEqual = require('arraybuffer-equal')
 
-// This module uses the hashcash algorithm for proof of work
-const hashcash = require('hashcashgen')
-
 // This module just abstracts over the document.cookie API
 const Cookie = require('js-cookie')
 
@@ -55,6 +52,7 @@ window.Distri = {
 
         socket.onmessage = (m) => {
           const message = JSON.parse(m.data)
+          console.log(message)
 
                     // Distri tells the user what is getting from the responseType field
           switch (message.responseType) {
@@ -76,33 +74,31 @@ window.Distri = {
                           */
                         if ((!obj.hashes) || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
                           worker = new Worker(URL.createObjectURL(new Blob([result])))
+                          worker.onmessage = result => {
+                            if (result.data.result === 'ready') {
+                              console.log('pasting')
+                              ready = true
+                              worker.postMessage({ work: workQueue })
+                            } else {
+                              console.log('heehee')
+                              socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
+                            }
+                          }
                           cb(socket, worker)
-                          socket.send(JSON.stringify({responseType: 'request_hash', response: true}))
+                          socket.send(JSON.stringify({responseType: 'request_work', response: true}))
                         } else {
                           console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
                         }
                       })
               })
               break
-                        // The user is recieving a hash to calcalate. This prevents users from spamming the server
-            case 'submit_hash':
-              socket.send(JSON.stringify({responseType: 'submit_hash', response: hashcash(message.response[0], message.response[1])}))
-              break
-                        // This is where the user actually gets work. It is sent to the worker made in the "file" case and awaits a message
+            // This is where the user actually gets work. It is sent to the worker made in the "file" case and awaits a message
             case 'submit_work':
-              if (ready === false) {
-                workQueue = message.work
-              } else {
+              workQueue = message.work
+              if (ready === true) {
                 worker.postMessage({work: message.work})
-              }
-              worker.onmessage = (result) => {
-                if (result.data.result === 'ready') {
-                  ready = true
-                  worker.postMessage({ work: workQueue })
-                  workQueue = undefined
-                } else {
-                  socket.send(JSON.stringify({responseType: 'submit_work', response: result.data.result}))
-                }
+              } else {
+                
               }
           }
         }
