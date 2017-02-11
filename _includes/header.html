@@ -7,7 +7,7 @@
   <div class="right sm-width-full">
     <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
       {% for my_page in site.pages %}
-        {% if my_page.title %}
+        {% if my_page.title and my_page.hide != true %}
         <li class="inline-block">
           <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="{{ my_page.url | prepend: site.baseurl }}">
             {{ my_page.title }}

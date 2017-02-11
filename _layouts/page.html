@@ -1,13 +1,39 @@
----
-layout: default
----
-<article class="container mx-auto px-2 mt2 mb4">
-  <header>
-    <h1 class="h0 py-4 mt-3">{{ page.title }}</h1>
-  </header>
-  <div class="col-4 sm-width-full border-top-thin">
-  </div>
-  <div class="prose mb-4 py-4">
-    {{ content }}
-  </div>
-</article>
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      {% include header.html %}
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">{{ page.title }}</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">{{ page.description }}</p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        {{ content }}
+      </div>
+
+    </div>
+
+    {% include footer.html %}
+
+  </body>
+
+</html>
+

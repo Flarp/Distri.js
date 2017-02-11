@@ -3,7 +3,7 @@ layout: home
 title: Distri.js
 description: "Distributed computing for the web!"
 permalink: /
-theme: yellow
+hide: true
 ---
 
 <center><img src="http://imgur.com/IlZcJ5z.gif"></center>
@@ -20,9 +20,9 @@ Distri asks for consent to use the user's computer for science on first time vis
 
 # Alright, I want to start building servers!
 
-Great! Visit the documentation for Distri-Node and Distri-JS to get started.
+Great! Visit the documentation for [Distri-Node](/doc/node) and Distri-JS to get started.
 
 # More questions?
 
-Visit the FAQ.
+[Visit the FAQ.](/faq)
 
