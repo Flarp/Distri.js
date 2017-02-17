@@ -17,8 +17,12 @@ const arrEqual = require('arraybuffer-equal')
 // This module just abstracts over the document.cookie API
 const Cookie = require('js-cookie')
 
+// This module escapes HTML to make sure no malicious code is added
+const escape = require('escape-html')
+
 import './distri.css'
 let sockets = []
+let result = []
 
 window.Distri = {
   start: (objs, cb) => {
@@ -113,6 +117,71 @@ window.Distri = {
     distriDiv.addEventListener('webkitAnimationEnd', complete)
     distriDiv.addEventListener('animationend', complete)
     distriDiv.addEventListener('oanimationend', complete)
+  },
+  update: () => {
+    distriDiv.innerHTML = `
+    <style>
+    #distriContainer {
+      opacity: 1;
+      width: 650px;
+      height: 550px;
+      margin: -1200px 0 0 -325px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+    #distriMenu {
+      width: 600px;
+      height: 500px;
+      border-radius: 10px;
+      border-color: grey;
+      border-width: 1px;
+      border-style: solid;
+      background-color: white;
+      position: relative;
+      box-shadow: 10px 10px 5px grey;
+      overflow: auto;
+      text-align: center;
+    }
+    .distri-button {
+      height: 40px;
+      margin: 10px 5px 5px 5px;
+      border-radius: 10%;
+      position: relative;
+      top: 20px;
+      right: 10px;
+      font-family: Abel;
+    }
+    </style>
+    <div id="distriContainer">
+      <div id="distriMenu">
+      ${
+        result.map((item, ind) => {
+          `
+          <div>
+            <img src=${item.icon}>
+            <h2>${escape(item.title)}</h2>
+            <p>${escape(item.body)}</p>
+            <br>
+            <btn>+</btn>
+            <p>${item.cores}</p>
+            <btn>-</btn>
+          </div>
+          `
+        }).join('')
+      }
+      </div>
+
+      <center>
+        <btn class="distri-button btn btn-success">Save</btn>
+        <btn class="distri-button btn btn-danger">Reset</btn>
+        <btn class="distri-button btn btn-warning">Add Server</btn>
+        <br>
+        <btn class="distri-button btn btn-primary">Finish</btn>
+      </center>
+     
+    </div> 
+    `
   }
 
 }
@@ -333,10 +402,11 @@ addButton.onclick = () => {
 const removeButtons = []
 let usableCores = window.navigator.hardwareConcurrency
 
+/*
 Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${database}`))))
 .then(results => Promise.all(results.map(result => result.json())))
 .then(results => {
-  const result = []
+  result = []
   results.map(database => database.map(item => result.push(item)))
   result.map((obj, ind) => {
     using[ind] = obj
@@ -441,6 +511,7 @@ Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${
 
   go.click()
 })
+*/
 
 // If the user has not been informed that Distri is running on their computer
 const checkInformed = () => {
