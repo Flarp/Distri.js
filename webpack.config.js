@@ -16,7 +16,7 @@ module.exports = {
           plugins: ['transform-object-assign']
         } },
             { test: /\.js$/, loader: 'webpack-append', query: 'var _crypto;' },
-            { test: /\.css$/, loader: 'style-loader!css-loader' },
+            { test: /\.css$/, loader: 'style-loader!css-loader' }
     ]
   },
   plugins: [
@@ -26,7 +26,7 @@ module.exports = {
       }
     }),
     new webpack.DefinePlugin({
-      distriDefault: JSON.stringify('Collatz Conjecture'),
+      distriDefault: JSON.stringify('honeybee-hive-flarp-pyjamarama.c9users.io:8081'),
       distriSafeDatabases: JSON.stringify(['raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json'])
     })
   ]

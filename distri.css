@@ -55,6 +55,30 @@
     animation-duration: 1s;
 }
 
+#distriMenu {
+     width: 600px;
+     height: 500px;
+     border-radius: 10px;
+     border-color: grey;
+     border-width: 1px;
+     border-style: solid;
+     background-color: white;
+     position: relative;
+     box-shadow: 10px 10px 5px grey;
+     overflow: auto;
+     text-align: center;
+}
+
+.distri-button {
+    height: 40px;
+    margin: 10px 5px 5px 5px;
+    border-radius: 10%;
+    position: relative;
+    top: 20px;
+    right: 10px;
+    font-family: Abel;
+}
+
 /* The bottom part of this file is from Bootstrap. I claim no ownership over it, all rights belong to the creators of Bootstrap. */
 
 .btn {
