@@ -9,4 +9,4 @@ permalink: /doc/
 
 
   * [Distri-Node API](/doc/node)
-  * Distri.js API
+  * [Distri.js API](/doc/js)
