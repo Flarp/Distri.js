@@ -10,7 +10,6 @@ Distri-JS is a client for Distri servers that serve out numbers and equations to
 
 ## Features
 
-* Does not use ```eval()``` or ```innerHTML``` anywhere at all!
 * Uses Web Workers, so the webpage will not be slowed down during computation.
 * All files are verified from a public database of trusted sources, with the links and checksums of each file, so if a file is tampered with, it will not be executed on the client-side.
 * Very nice menu thing. Looks pretty cool.
