@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hello Distri Tutorial</title>
+  <meta name="description" content="Distributed computing for the web!">
+
+  
+  
+  <link rel="stylesheet" href="http://localhost:4000/assets/style.css">
+  <link rel="stylesheet" href="http://localhost:4000/assets/slate-syntax.css">
+
+  <link rel="canonical" href="http://localhost:4000/tutorials/hello">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="http://localhost:4000/feed.xml">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      <header class="border-bottom-thick px-2 clearfix">
+  <div class="left sm-width-full py-1 mt-1 mt-lg-0">
+    <a class="align-middle link-primary text-accent" href="/">
+      Distri.js
+    </a>
+  </div>
+  <div class="right sm-width-full">
+    <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/doc/">
+            API
+          </a>
+        </li>
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/faq/">
+            FAQ
+          </a>
+        </li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/tutorials/">
+            Tutorials
+          </a>
+        </li>
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">Hello Distri Tutorial</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">Hello!</p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        <p>To start off with the very basics of Distri, we’re going to be building a simple “Hello Distri” server.</p>
+
+<p>The first thing we need to do is set up a basic server. Here is how we do that.</p>
+
+<p><code class="highlighter-rouge">server.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'Distri-Node'</span><span class="p">)</span>
+
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>Now we have a server, but we don’t have any work, and no real way for any clients to connect. We need to add a few settings to get started. The settings are passed to the constructor using an object, and the first option we are going to pass is <code class="highlighter-rouge">connection</code>, an object that the <a href="https://github.com/websockets/ws"><code class="highlighter-rouge">websocket/ws</code></a> constructor takes.</p>
+
+<p><code class="highlighter-rouge">server.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'Distri-Node'</span><span class="p">)</span>
+
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+  <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">port</span><span class="p">:</span> <span class="mi">8080</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p>If you’re not really planning to do anything special with the WebSocket server, this is all you need.</p>
+
+<p>Our clients can now connect, but that’s it, nothing else will happen. We need some work to give to the clients. We can do that with the <code class="highlighter-rouge">DistriServer#addWork</code> function.</p>
+
+<p><code class="highlighter-rouge">server.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'Distri-Node'</span><span class="p">)</span>
+
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+  <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">port</span><span class="p">:</span> <span class="mi">8080</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'hello!'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>It’s a good idea to call this function when all work runs out, so users can continue to be served work, instead of the process ending.</p>
+
+<p>WIP</p>
+
+      </div>
+
+    </div>
+
+    <div class="border-top-thin clearfix mt-2 mt-lg-4">
+  <div class="container mx-auto px-2">
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
+      <li class="inline-block mr-1">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </li>
+      <li class="inline-block">
+        <a class="github-button" href="https://github.com/Flarp/distri-js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+  </body>
+
+</html>
+

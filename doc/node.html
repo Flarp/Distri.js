@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Node API</title>
+  <meta name="description" content="Distributed computing for the web!">
+
+  
+  
+  <link rel="stylesheet" href="http://localhost:4000/assets/style.css">
+  <link rel="stylesheet" href="http://localhost:4000/assets/slate-syntax.css">
+
+  <link rel="canonical" href="http://localhost:4000/doc/node">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="http://localhost:4000/feed.xml">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      <header class="border-bottom-thick px-2 clearfix">
+  <div class="left sm-width-full py-1 mt-1 mt-lg-0">
+    <a class="align-middle link-primary text-accent" href="/">
+      Distri.js
+    </a>
+  </div>
+  <div class="right sm-width-full">
+    <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/doc/">
+            API
+          </a>
+        </li>
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/faq/">
+            FAQ
+          </a>
+        </li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/tutorials/">
+            Tutorials
+          </a>
+        </li>
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">Node API</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">Documentation for Distri-Node</p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        <p><a name="module_Distri-Node"></a></p>
+
+<h2 id="distri-node">Distri-Node</h2>
+
+<ul>
+  <li><a href="#module_Distri-Node">Distri-Node</a>
+    <ul>
+      <li><a href="#module_Distri-Node..DistriServer">~DistriServer</a> ⇐ <code>EventEmitter</code>
+        <ul>
+          <li><a href="#new_module_Distri-Node..DistriServer_new"><code class="highlighter-rouge">new DistriServer(opts)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer.DistriServer+server"><code class="highlighter-rouge">.server</code></a> : <code>Object</code></li>
+          <li><a href="#module_Distri-Node..DistriServer.DistriServer+solutions"><code class="highlighter-rouge">.solutions</code></a> : <code>number</code></li>
+          <li><a href="#module_Distri-Node..DistriServer.DistriServer+userCount"><code class="highlighter-rouge">.userCount</code></a> : <code>number</code></li>
+          <li><a href="#module_Distri-Node..DistriServer.DistriServer+session"><code class="highlighter-rouge">.session</code></a> : <code>Array.&lt;DistriProblem&gt;</code></li>
+          <li><a href="#module_Distri-Node..DistriServer.DistriServer+remaining"><code class="highlighter-rouge">.remaining</code></a> : <code>Array</code></li>
+          <li><a href="#module_Distri-Node..DistriServer.DistriServer+pending"><code class="highlighter-rouge">.pending</code></a> : <code>number</code></li>
+          <li><a href="#module_Distri-Node..DistriServer+addWork"><code class="highlighter-rouge">.addWork(work)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer+CheckPercentage"><code class="highlighter-rouge">.CheckPercentage(solutions, percentage, resolve, reject)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer+event_all_work_complete"><code class="highlighter-rouge">"all_work_complete"</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer+event_work_submitted"><code class="highlighter-rouge">"work_submitted" (work, solution, resolve, reject)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer+event_workgroup_complete"><code class="highlighter-rouge">"workgroup_complete" (work, solutions, resolve, reject)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer+event_workgroup_accepted"><code class="highlighter-rouge">"workgroup_accepted" (work, solution)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriServer+event_workgroup_rejected"><code class="highlighter-rouge">"workgroup_rejected" (work, solutions)</code></a></li>
+        </ul>
+      </li>
+      <li><a href="#module_Distri-Node..DistriClient">~DistriClient</a>
+        <ul>
+          <li><a href="#new_module_Distri-Node..DistriClient_new"><code class="highlighter-rouge">new DistriClient(host)</code></a></li>
+          <li><a href="#module_Distri-Node..DistriClient.DistriClient+client"><code class="highlighter-rouge">.client</code></a> : <code>WebSocket</code></li>
+        </ul>
+      </li>
+      <li><a href="#module_Distri-Node..DistriProblem"><code class="highlighter-rouge">~DistriProblem</code></a> : <code>Object</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p><a name="module_Distri-Node..DistriServer"></a></p>
+
+<h3 id="distri-nodedistriserver--eventemitter">Distri-Node~DistriServer ⇐ <code>EventEmitter</code></h3>
+<p>Constructor for DistriServer.</p>
+
+<p><strong>Kind</strong>: inner class of <a href="#module_Distri-Node"><code class="highlighter-rouge">Distri-Node</code></a>
+<strong>Extends:</strong> <code>EventEmitter</code><br />
+<strong>Emits</strong>: <code>DistriServer#event:work_submitted</code>, <code>DistriServer#event:workgroup_complete</code>, <code>DistriServer#event:workgroup_accepted</code>, <code>DistriServer#event:workgroup_rejected</code>, <code>DistriServer#event:all_work_complete</code></p>
+
+<ul>
+  <li><a href="#module_Distri-Node..DistriServer">~DistriServer</a> ⇐ <code>EventEmitter</code>
+    <ul>
+      <li><a href="#new_module_Distri-Node..DistriServer_new"><code class="highlighter-rouge">new DistriServer(opts)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer.DistriServer+server"><code class="highlighter-rouge">.server</code></a> : <code>Object</code></li>
+      <li><a href="#module_Distri-Node..DistriServer.DistriServer+solutions"><code class="highlighter-rouge">.solutions</code></a> : <code>number</code></li>
+      <li><a href="#module_Distri-Node..DistriServer.DistriServer+userCount"><code class="highlighter-rouge">.userCount</code></a> : <code>number</code></li>
+      <li><a href="#module_Distri-Node..DistriServer.DistriServer+session"><code class="highlighter-rouge">.session</code></a> : <code>Array.&lt;DistriProblem&gt;</code></li>
+      <li><a href="#module_Distri-Node..DistriServer.DistriServer+remaining"><code class="highlighter-rouge">.remaining</code></a> : <code>Array</code></li>
+      <li><a href="#module_Distri-Node..DistriServer.DistriServer+pending"><code class="highlighter-rouge">.pending</code></a> : <code>number</code></li>
+      <li><a href="#module_Distri-Node..DistriServer+addWork"><code class="highlighter-rouge">.addWork(work)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer+CheckPercentage"><code class="highlighter-rouge">.CheckPercentage(solutions, percentage, resolve, reject)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer+event_all_work_complete"><code class="highlighter-rouge">"all_work_complete"</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer+event_work_submitted"><code class="highlighter-rouge">"work_submitted" (work, solution, resolve, reject)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer+event_workgroup_complete"><code class="highlighter-rouge">"workgroup_complete" (work, solutions, resolve, reject)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer+event_workgroup_accepted"><code class="highlighter-rouge">"workgroup_accepted" (work, solution)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriServer+event_workgroup_rejected"><code class="highlighter-rouge">"workgroup_rejected" (work, solutions)</code></a></li>
+    </ul>
+  </li>
+</ul>
+
+<p><a name="new_module_Distri-Node..DistriServer_new"></a></p>
+
+<h4 id="new-distriserveropts"><code class="highlighter-rouge">new DistriServer(opts)</code></h4>
+<p><strong>Throws</strong>:</p>
+
+<ul>
+  <li><code>TypeError</code> Options sent to the constructor are not in a single object.</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>opts</td>
+      <td><code>Object</code></td>
+      <td>The object passed to the constructor.</td>
+    </tr>
+    <tr>
+      <td>opts.connection</td>
+      <td><code>Object</code></td>
+      <td>Options for a ws.Server constructor. (websockets/ws)</td>
+    </tr>
+    <tr>
+      <td>opts.verificationStrength</td>
+      <td><code>number</code></td>
+      <td>How many solutions must be submitted for a problem to be considered complete. Security measure to help keep clients from spamming incorrect answers.</td>
+    </tr>
+    <tr>
+      <td>opts.files</td>
+      <td><code>Object</code></td>
+      <td>URL’s to files for Distri clients to fetch.</td>
+    </tr>
+    <tr>
+      <td>opts.files.node</td>
+      <td><code>string</code></td>
+      <td>File to fetch for Node.js clients, not prepended with ‘http(s)://’.</td>
+    </tr>
+    <tr>
+      <td>opts.files.javascript</td>
+      <td><code>string</code></td>
+      <td>File to fetch for JavaScript clients, not prepended with ‘http(s)://’.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer.DistriServer+server"></a></p>
+
+<h4 id="distriserverserver--object"><code class="highlighter-rouge">distriServer.server</code> : <code>Object</code></h4>
+<p>The WebSocket server for all of Distri’s work</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a> 
+<a name="module_Distri-Node..DistriServer.DistriServer+solutions"></a></p>
+
+<h4 id="distriserversolutions--number"><code class="highlighter-rouge">distriServer.solutions</code> : <code>number</code></h4>
+<p>The number of solutions that have been submitted for a single session. Resets when all work is finished.</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a><br />
+<a name="module_Distri-Node..DistriServer.DistriServer+userCount"></a></p>
+
+<h4 id="distriserverusercount--number"><code class="highlighter-rouge">distriServer.userCount</code> : <code>number</code></h4>
+<p>The number of currently connected clients.</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a>
+<a name="module_Distri-Node..DistriServer.DistriServer+session"></a></p>
+
+<h4 id="distriserversession--arrayltdistriproblemgt"><code class="highlighter-rouge">distriServer.session</code> : <code>Array.&lt;DistriProblem&gt;</code></h4>
+<p>An array of objects that contains all work, solutions, and other metadata.</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a> 
+<a name="module_Distri-Node..DistriServer.DistriServer+remaining"></a></p>
+
+<h4 id="distriserverremaining--array"><code class="highlighter-rouge">distriServer.remaining</code> : <code>Array</code></h4>
+<p>An array of indexes that have not been solved yet.</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a>
+<a name="module_Distri-Node..DistriServer.DistriServer+pending"></a></p>
+
+<h4 id="distriserverpending--number"><code class="highlighter-rouge">distriServer.pending</code> : <code>number</code></h4>
+<p>How many problems are undergoing verification.</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a>
+<a name="module_Distri-Node..DistriServer+addWork"></a></p>
+
+<h4 id="distriserveraddworkwork"><code class="highlighter-rouge">distriServer.addWork(work)</code></h4>
+<p>A function that adds work to the work queue.</p>
+
+<p><strong>Kind</strong>: instance method of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a>
+<strong>Throws</strong>:</p>
+
+<ul>
+  <li><code>TypeError</code> Work supplied is not an array.</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>work</td>
+      <td><code>Array</code></td>
+      <td>Work to be added to the work queue.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer+CheckPercentage"></a></p>
+
+<h4 id="distriservercheckpercentagesolutions-percentage-resolve-reject"><code class="highlighter-rouge">distriServer.CheckPercentage(solutions, percentage, resolve, reject)</code></h4>
+<p>A built-in verification function for Distri that checks to see if a set of solutions contains one solution that occurs more than a certain percentage of the time.</p>
+
+<p><strong>Kind</strong>: instance method of <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a><br />
+<strong>See</strong>: DistriServer#workgroup_complete</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>solutions</td>
+      <td><code>Array</code></td>
+      <td>The solutions that are being checked.</td>
+    </tr>
+    <tr>
+      <td>percentage</td>
+      <td><code>number</code></td>
+      <td>The percent of time a certain solution must occur equal to or more than.</td>
+    </tr>
+    <tr>
+      <td>resolve</td>
+      <td><code>function</code></td>
+      <td>A callback function that will be called with the accepted answer. Good to use with the resolve() function in workgroup_complete.</td>
+    </tr>
+    <tr>
+      <td>reject</td>
+      <td><code>function</code></td>
+      <td>A callback function that will be called if none of the solutions satisfy the percentage. Good to use with the reject() function in workgroup_complete.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer+event_work_submitted"></a></p>
+
+<h4 id="work_submitted-work-solution-resolve-reject"><code class="highlighter-rouge">"work_submitted" (work, solution, resolve, reject)</code></h4>
+<p>Fires when a single user submits work. Useful for authentication the user. Do not use for verifying work, use workgroup_complete instead. If a listener is attached to this event, a resolve() and reject() function will be emitted, and one of them must be called in order for Distri to know what to do with the work.</p>
+
+<p><strong>Kind</strong>: event emitted by <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a>
+<strong>See</strong>: DistriServer#workgroup_complete</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>work</td>
+      <td><code>Any</code></td>
+      <td>Work the client was sent.</td>
+    </tr>
+    <tr>
+      <td>solution</td>
+      <td><code>Any</code></td>
+      <td>Solution the client sent back.</td>
+    </tr>
+    <tr>
+      <td>socket</td>
+      <td><code>WebSocket</code></td>
+      <td>WebSocket session of the user.</td>
+    </tr>
+    <tr>
+      <td>resolve</td>
+      <td><code>function</code></td>
+      <td>Function from a Promise. When called, the client’s work is accepted and put into the solution pool.</td>
+    </tr>
+    <tr>
+      <td>reject</td>
+      <td><code>function</code></td>
+      <td>Function from a Promise. When called, the client’s work is rejected.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer+event_workgroup_complete"></a></p>
+
+<h4 id="workgroup_complete-work-solutions-resolve-reject"><code class="highlighter-rouge">"workgroup_complete" (work, solutions, resolve, reject)</code></h4>
+<p>Fires when a piece of work has the required amount of solutions, set by the verification strength. If no listener is attached to this event, the first solution is automatically accepted.</p>
+
+<p><strong>Kind</strong>: event emitted by <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>work</td>
+      <td><code>Any</code></td>
+      <td>The work sent to all of the clients.</td>
+    </tr>
+    <tr>
+      <td>solutions</td>
+      <td><code>Array</code></td>
+      <td>An array of the solutions each client sent back. Note that this will still be an array even if the verification strength is only one.</td>
+    </tr>
+    <tr>
+      <td>resolve</td>
+      <td><code>function</code></td>
+      <td>A function that accepts the solution given to it. Be sure to give it just one solution, and not the entire array.</td>
+    </tr>
+    <tr>
+      <td>reject</td>
+      <td><code>function</code></td>
+      <td>A function that takes no parameters and rejects the entire workgroup, starting it over.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer+event_workgroup_accepted"></a></p>
+
+<h4 id="workgroup_accepted-work-solution"><code class="highlighter-rouge">"workgroup_accepted" (work, solution)</code></h4>
+<p>Fires when a piece of work has a solution accepted for it.</p>
+
+<p><strong>Kind</strong>: event emitted by <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>work</td>
+      <td><code>Any</code></td>
+      <td>The work sent to the clients.</td>
+    </tr>
+    <tr>
+      <td>solution</td>
+      <td><code>Any</code></td>
+      <td>The accepted solution.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer+event_workgroup_rejected"></a></p>
+
+<h4 id="workgroup_rejected-work-solutions"><code class="highlighter-rouge">"workgroup_rejected" (work, solutions)</code></h4>
+<p>Fires when a workgroup is rejected.</p>
+
+<p><strong>Kind</strong>: event emitted by <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>work</td>
+      <td><code>Any</code></td>
+      <td>The work the clients were sent.</td>
+    </tr>
+    <tr>
+      <td>solutions</td>
+      <td><code>Array</code></td>
+      <td>The solutions that were sent in for the problem.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriServer+event_all_work_complete"></a></p>
+
+<h4 id="all_work_complete"><code class="highlighter-rouge">"all_work_complete"</code></h4>
+<p>Fires when all work is complete. No parameters are given.</p>
+
+<p><strong>Kind</strong>: event emitted by <a href="#module_Distri-Node..DistriServer"><code class="highlighter-rouge">DistriServer</code></a></p>
+
+<p><a name="module_Distri-Node..DistriClient"></a></p>
+
+<h3 id="distri-nodedistriclient">Distri-Node~DistriClient</h3>
+<p>A Node.js client for Distri.</p>
+
+<p><strong>Kind</strong>: inner class of <a href="#module_Distri-Node"><code class="highlighter-rouge">Distri-Node</code></a></p>
+
+<ul>
+  <li><a href="#module_Distri-Node..DistriClient">~DistriClient</a>
+    <ul>
+      <li><a href="#new_module_Distri-Node..DistriClient_new"><code class="highlighter-rouge">new DistriClient(host)</code></a></li>
+      <li><a href="#module_Distri-Node..DistriClient.DistriClient+client"><code class="highlighter-rouge">.client</code></a> : <code>WebSocket</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p><a name="new_module_Distri-Node..DistriClient_new"></a></p>
+
+<h4 id="new-districlienthost"><code class="highlighter-rouge">new DistriClient(host)</code></h4>
+<p><strong>Throws</strong>:</p>
+
+<ul>
+  <li><code>TypeError</code> Host is not a string.</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>host</td>
+      <td><code>string</code></td>
+      <td>WebSocket link for the Distri server.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="module_Distri-Node..DistriClient.DistriClient+client"></a></p>
+
+<h4 id="districlientclient--websocket"><code class="highlighter-rouge">distriClient.client</code> : <code>WebSocket</code></h4>
+<p>The WebSocket session for the client.</p>
+
+<p><strong>Kind</strong>: instance property of <a href="#module_Distri-Node..DistriClient"><code class="highlighter-rouge">DistriClient</code></a>
+<a name="module_Distri-Node..DistriProblem"></a></p>
+
+<h3 id="distri-nodedistriproblem--object"><code class="highlighter-rouge">Distri-Node~DistriProblem</code> : <code>Object</code></h3>
+<p><strong>Kind</strong>: inner typedef of <a href="#module_Distri-Node"><code class="highlighter-rouge">Distri-Node</code></a>
+<strong>Properties</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>work</td>
+      <td><code>Any</code></td>
+      <td>The work for that problem.</td>
+    </tr>
+    <tr>
+      <td>workers</td>
+      <td><code>number</code></td>
+      <td>The number of clients currently working on the problem.</td>
+    </tr>
+    <tr>
+      <td>solutions</td>
+      <td><code>Array</code></td>
+      <td>The submitted solutions for the problem.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+      </div>
+
+    </div>
+
+    <div class="border-top-thin clearfix mt-2 mt-lg-4">
+  <div class="container mx-auto px-2">
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
+      <li class="inline-block mr-1">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </li>
+      <li class="inline-block">
+        <a class="github-button" href="https://github.com/Flarp/distri-js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+  </body>
+
+</html>
+
