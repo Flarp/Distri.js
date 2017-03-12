@@ -1,4 +1,12 @@
 const webpack = require('webpack')
+const fs = require('fs')
+if (!fs.existsSync('./build')) {
+  fs.mkdirSync('./build')
+}
+fs.writeFileSync('./build/index.html', `
+  <body></body>
+  <script src="distri.min.js"></script>
+  `)
 
 module.exports = {
   entry: './distri.js',
@@ -9,14 +17,8 @@ module.exports = {
   devtool: 'source-map',
   module: {
     loaders: [
-      { test: /\.js$/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['es2015', 'stage-0'],
-          plugins: ['transform-object-assign']
-        } },
-            { test: /\.js$/, loader: 'webpack-append', query: 'var _crypto;' },
-            { test: /\.css$/, loader: 'style-loader!css-loader' }
+      { test: /\.js$/, loader: 'webpack-append', query: 'var _crypto;' },
+      { test: /\.css$/, loader: 'style-loader!css-loader' }
     ]
   },
   plugins: [

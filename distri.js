@@ -209,17 +209,17 @@ window.Distri = {
     <div id="distriMenu">
     ${
       session.map((item, ind) => {
-        return `<div style="width: 200px; height: 300px; position: absolute; left: ${200 * (ind % 3)}px; top: ${300 * Math.floor(ind / 3)}px; display: inline-block">
+        return `<div style="width: 200px; height: 300px; position: absolute; left: ${200 * (ind % 3)}px; top: ${300 * Math.floor(ind / 3)}px; display: inline-block" id="distri-item-${ind}">
           <img src="${item.icon}" style="height: 50px; width: 50px;">
-          <h2 style="font-family: Abel;">${escape(item.title)}</h2>
-          <p style="font-family: Abel;">${escape(item.description)}</p>
+          <h2 style="font-family: Abel;" id="distri-header-${ind}">${escape(item.title)}</h2>
+          <p style="font-family: Abel;" id="distri-body-${ind}">${escape(item.description)}</p>
           <br>
           ${
             !item.url
             ? `<input type="text" onkeydown="if (event.keyCode===13){Distri.add(this.value);return false;}" placeholder="Enter server WebSocket URL, without the 'ws(s)://'">`
-            : `<button class="btn btn-success"  style="width: 30px; height: 30px; display: inline-flex; border-radius: 25%;" onclick="Distri.addCore(${ind})">+</button>
-               <p style="font-family: Abel; padding: 0px 5px 0px 5px; display: inline-flex; ">${session[ind].cores}</p>
-               <button class="btn btn-danger" style="width: 30px; height: 30px; display: inline-flex; border-radius: 25%;" onclick="Distri.removeCore(${ind})">-</button>`
+            : `<button class="btn btn-success" id="distri-add-${ind}" style="width: 30px; height: 30px; display: inline-flex; border-radius: 25%;" onclick="Distri.addCore(${ind})">+</button>
+               <p style="font-family: Abel; padding: 0px 5px 0px 5px; display: inline-flex; id="distri-cores-${ind}" ">${session[ind].cores}</p>
+               <button class="btn btn-danger" style="width: 30px; height: 30px; display: inline-flex; border-radius: 25%;" onclick="Distri.removeCore(${ind})" id="distri-remove-${ind}">-</button>`
             }
         </div>
         `
