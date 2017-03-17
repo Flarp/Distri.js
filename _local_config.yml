@@ -3,3 +3,4 @@ baseurl: ""
 spoofurl: "https://distri-js-flarp-pyjamarama.c9users.io"
 destination: "../Distri-Web"
 exclude: ["CNAME"]
+theme_color: yellow
