@@ -3,7 +3,7 @@ hide: true
 layout: page
 title: Obtaining a Distri.js file
 description: How to webpack Distri
-permalink: /tutorial/webpack
+permalink: /tutorials/webpack
 ---
 
 Getting a `distri.min.js` file is very simple. You need `npm`, `node` and `git`, but nothing else for this tutorial.

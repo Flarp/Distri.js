@@ -181,7 +181,7 @@ Our server side is done, but our client side is not. We still need a running web
 
 ```
 
-Right now you may now have a `distri.js.min`, but getting one is very simple. There is a tutorial on it [<span style="color: blue;">here</span>](/tutorial/webpack). 
+Right now you may now have a `distri.js.min`, but getting one is very simple. There is a tutorial on it [<span style="color: blue;">here</span>](/tutorials/webpack). 
 
 Now, host your HTML file and visit the website. The first time you visit it, it should ask you if you are okay with Distri being run on your computer. You might be tempted to click okay, but for our purposes, we need to hit "Options". Another menu will popup, and you'll see your server _isn't there_.
 
