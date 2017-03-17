@@ -1,3 +1,4 @@
 url: "https://distri-js-flarp-pyjamarama.c9users.io"
 baseurl: ""
 spoofurl: "https://distri-js-flarp-pyjamarama.c9users.io"
+destination: "../Distri-Web"

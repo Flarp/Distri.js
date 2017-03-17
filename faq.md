@@ -9,9 +9,9 @@ permalink: /faq/
 
 Volunteer computing, sometimes more broadly referred to as distributed computing, is taking tasks that can be computed in parallel (at the same time) and doing just that. The tasks are spread out among different computers, and these computers complete the task and report back to the server. You might of heard of this referred to as a master/slave scenario.
 
-Volunteer computing, if done right, and with the right tasks, could rival the power of a supercomputer. If you're not very good with computers, think of it as taking a bunch of computers, and adding their processing power up. It's not _totally_ like that, because getting nine women pregant does not deliver a baby in a month. You can't actually do a problem _faster_, but you can do more problems at the same time. This is great for things like the [Collatz Conjecture](https://www.youtube.com/watch?v=5mFpVDpKX70), in which the result of a number in a set does not depend on the result of other numbers in the set. Problems that depend on the result of the previous calculation (think of something like the [Fibonacci Sequence](https://www.youtube.com/watch?v=wTlw7fNcO-0)) are useless for the approach volunteer computing takes to get things done faster.
+Volunteer computing, if done right, and with the right tasks, could rival the power of a supercomputer. If you're not very good with computers, think of it as taking a bunch of computers, and adding their processing power up. It's not _totally_ like that, because getting nine women pregant does not deliver a baby in a month. You can't actually do a problem _faster_, but you can do more problems at the same time. This is great for things like the [<span style="color: blue">Collatz Conjecture</span>](https://www.youtube.com/watch?v=5mFpVDpKX70), in which the result of a number in a set does not depend on the result of other numbers in the set. Problems that depend on the result of the previous calculation (think of something like the [<span style="color: blue">Fibonacci Sequence</span>](https://www.youtube.com/watch?v=wTlw7fNcO-0)) are useless for the approach volunteer computing takes to get things done faster.
 
-The best kinds of tasks for volunteer computing are [_embarrassingly parallel_](https://en.wikipedia.org/wiki/Embarrassingly_parallel) problems. Wikipedia provides some good examples of these kinds of problems [here](https://en.wikipedia.org/wiki/Embarrassingly_parallel#Examples).
+The best kinds of tasks for volunteer computing are [<span style="color: blue">embarrassingly parallel</span>](https://en.wikipedia.org/wiki/Embarrassingly_parallel) problems. Wikipedia provides some good examples of these kinds of problems [here](https://en.wikipedia.org/wiki/Embarrassingly_parallel#Examples).
 
 # How does Distri work?
 
@@ -27,9 +27,9 @@ Ironically enough, Distri-Node was designed to be as minimalistic and modular as
 
 # What were the inspirations for Distri?
 
-Lots of things. [BOINC](http://boinc.berkeley.edu/) was the first time I came across the concept of volunteer computing, and I knew right away the browser could use it. [Honeybee-Hive](https://github.com/Kurimizumi/Honeybee-Hive) was another inspiration. The program did its job well, but failed a lot of placed internally. It was not database-agnostic, and you had to use [MongoDB](https://www.mongodb.com/) to use HBH. It also did not have the verification strength feature, and work was distributed serially.
+Lots of things. [<span style="color: blue">BOINC</span>](http://boinc.berkeley.edu/) was the first time I came across the concept of volunteer computing, and I knew right away the browser could use it. [<span style="color: blue">Honeybee-Hive</span>](https://github.com/Kurimizumi/Honeybee-Hive) was another inspiration. The program did its job well, but failed a lot of placed internally. It was not database-agnostic, and you had to use [<span style="color: blue">MongoDB</span>](https://www.mongodb.com/) to use HBH. It also did not have the verification strength feature, and work was distributed serially.
 
-Other ideas that influenced the development are the [Unix Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy), the [GNU Manifesto](https://en.wikipedia.org/wiki/GNU_Manifesto), and the ideas of decentrialization and distributed systems. Distri is under the GPLv3 license.
+Other ideas that influenced the development are the [<span style="color: blue">Unix Philosophy</span>](https://en.wikipedia.org/wiki/Unix_philosophy), the [<span style="color: blue">GNU Manifesto</span>](https://en.wikipedia.org/wiki/GNU_Manifesto), and the ideas of decentrialization and distributed systems. Distri is under the GPLv3 license.
 
 # What are the ethics behind Distri?
 

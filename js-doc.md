@@ -34,7 +34,7 @@ Distri has a GUI for the user to be able to choose the servers they would like t
 
 ## Javascript Workers
 
-JavaScript Worker files are simply [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) files, with a tiny bit of structured calls to make sure all parts of Distri are in sync. To start the work cycle, the worker file must post a message, `"ready"`, to say that it is ready to start accepting work. No work scripts can have a solution that is `"ready"`, as Distri will not post this to the server.
+JavaScript Worker files are simply [<span style="color: blue">Web Worker</span>](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) files, with a tiny bit of structured calls to make sure all parts of Distri are in sync. To start the work cycle, the worker file must post a message, `"ready"`, to say that it is ready to start accepting work. No work scripts can have a solution that is `"ready"`, as Distri will not post this to the server.
 
 ```javascript
 postMessage({result:'ready'})

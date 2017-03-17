@@ -8,5 +8,5 @@ permalink: /doc/
 # Whatcha lookin' for?
 
 
-  * [Distri-Node API](/doc/node)
-  * [Distri.js API](/doc/js)
+  * [<span style="color: blue">Distri-Node API</span>](/doc/node)
+  * [<span style="color: blue">Distri.js API</span>](/doc/js)
