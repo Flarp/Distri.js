@@ -11,11 +11,11 @@
 
   
   
-  <link rel="stylesheet" href="https://distri.js.org/assets/style.css">
-  <link rel="stylesheet" href="https://distri.js.org/assets/slate-syntax.css">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/slate-syntax.css">
 
-  <link rel="canonical" href="https://distri.js.org/doc/js">
-  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="https://distri.js.org/feed.xml">
+  <link rel="canonical" href="http://0.0.0.0:8080/doc/js">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="http://0.0.0.0:8080/feed.xml">
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
@@ -120,7 +120,7 @@
 
 <h2 id="javascript-workers">Javascript Workers</h2>
 
-<p>JavaScript Worker files are simply <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Web Worker</a> files, with a tiny bit of structured calls to make sure all parts of Distri are in sync. To start the work cycle, the worker file must post a message, <code class="highlighter-rouge">"ready"</code>, to say that it is ready to start accepting work. No work scripts can have a solution that is <code class="highlighter-rouge">"ready"</code>, as Distri will not post this to the server.</p>
+<p>JavaScript Worker files are simply <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers"><span style="color: blue">Web Worker</span></a> files, with a tiny bit of structured calls to make sure all parts of Distri are in sync. To start the work cycle, the worker file must post a message, <code class="highlighter-rouge">"ready"</code>, to say that it is ready to start accepting work. No work scripts can have a solution that is <code class="highlighter-rouge">"ready"</code>, as Distri will not post this to the server.</p>
 
 <div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'ready'</span><span class="p">})</span>
 

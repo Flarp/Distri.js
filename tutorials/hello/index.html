@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hello Distri!</title>
+  <meta name="description" content="Distributed computing for the web!">
+
+  
+  
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/slate-syntax.css">
+
+  <link rel="canonical" href="http://0.0.0.0:8080/tutorials/hello/">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="http://0.0.0.0:8080/feed.xml">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      <header class="border-bottom-thick px-2 clearfix">
+  <div class="left sm-width-full py-1 mt-1 mt-lg-0">
+    <a class="align-middle link-primary text-accent" href="/">
+      Distri.js
+    </a>
+  </div>
+  <div class="right sm-width-full">
+    <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/doc/">
+            API
+          </a>
+        </li>
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/faq/">
+            FAQ
+          </a>
+        </li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/tutorials/">
+            Tutorials
+          </a>
+        </li>
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">Hello Distri!</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">Make a simple "Hello World" server in Distri</p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        <p>Distri was made to be very minimalistic, providing you pretty much nothing but a tiny framework to help distribute work, and return it to the server. Other than the verification strength feature (which we will go over more in depth in the Collatz tutorial), Distri leaves all verification up to you. So, without further ado, let’s make a simple example server.</p>
+
+<p>Distri is split into two parts, <em>Distri.js</em>, and <em>Distri-Node</em>. These are two different things, be sure to keep that in mind. <em>Distri.js</em> is on the client side, and runs the work that it’s provided from <em>Distri-Node</em>. We will start with Distri-Node and get a simple do-nothing server running first.</p>
+
+<p><code class="highlighter-rouge">server.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({})</span>
+</code></pre>
+</div>
+
+<p>We now have a simple running server, that does nothing at all. (Yes, the second that constructor is called, it’s running. Remember that!) However, our server doesn’t quite do anything yet, so we need to change that! We’re still missing a worker file, any kind of data handling, and any work. When a user connects, they will be told there is no work, and to go away. That’s rude, we don’t want our kind clients leaving, so let’s keep Distri from telling them that!</p>
+
+<p>Right now the only thing we want is to have the client recieve “Hello”, and return “ Distri!”. The client will recieve “Hello” through <em>work</em>, which is what Distri gives to all connected clients. So, let’s add “Hello” to the work queue!</p>
+
+<p><code class="highlighter-rouge">server.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">addWork</code> method of the Distri server takes an array to be appended to the work queue. The content of the array must be able to be stringified into JSON, or Distri will crash.</p>
+
+<p>Now that we have work, we are still missing any kind of data handling, and a worker file. Let’s build the worker file right now!</p>
+
+<p>The worker files in Distri are nothing more than Web Worker files, so if you’re used to working with those, you should be very familiar with the syntax. If you haven’t worked with Web Workers before, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers"><span style="color: blue">here is a good place to start</span></a>.</p>
+
+<p>Let’s start making our worker file.</p>
+
+<p><code class="highlighter-rouge">worker.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">work</span><span class="p">})</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>When this worker script receives a message, it will simply echo it back to the server. The work is stored in <code class="highlighter-rouge">m.data.work</code>, so remember that. Also, the work must be submitted in the form of an object, with the <code class="highlighter-rouge">result</code> property holding the result. This is due to how the <code class="highlighter-rouge">postMessage</code> function works.</p>
+
+<p>We don’t want the script to echo back the message exactly, however. We want it to return “ Distri!”. Obviously, it won’t be too hard.</p>
+
+<p><code class="highlighter-rouge">worker.js</code></p>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s2">" Distri!"</span><span class="p">})</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>That’s it! Your worker file is done, but your server has no way to give it to your client (yet).</p>
+
+      </div>
+
+    </div>
+
+    <div class="border-top-thin clearfix mt-2 mt-lg-4">
+  <div class="container mx-auto px-2">
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
+      <li class="inline-block mr-1">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </li>
+      <li class="inline-block">
+        <a class="github-button" href="https://github.com/Flarp/distri-js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+  </body>
+
+</html>
+
