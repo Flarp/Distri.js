@@ -7,15 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Hello Distri!</title>
-  <meta name="description" content="Distributed computing for the web!">
+  <meta name="description" content="">
 
   
   
   <link rel="stylesheet" href="/assets/style.css">
-  <link rel="stylesheet" href="/assets/slate-syntax.css">
-
+  <link rel="stylesheet" href="/assets/perldoc.css">
   <link rel="canonical" href="http://0.0.0.0:8080/tutorials/hello/">
-  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="http://0.0.0.0:8080/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="" href="http://0.0.0.0:8080/feed.xml">
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
@@ -29,7 +28,7 @@
       <header class="border-bottom-thick px-2 clearfix">
   <div class="left sm-width-full py-1 mt-1 mt-lg-0">
     <a class="align-middle link-primary text-accent" href="/">
-      Distri.js
+      
     </a>
   </div>
   <div class="right sm-width-full">
@@ -71,6 +70,8 @@
         </li>
         
       
+        
+      
     </ul>
   </div>
 </header>
@@ -96,8 +97,8 @@
 
 <p>Distri is split into two parts, <em>Distri.js</em>, and <em>Distri-Node</em>. These are two different things, be sure to keep that in mind. <em>Distri.js</em> is on the client side, and runs the work that it’s provided from <em>Distri-Node</em>. We will start with Distri-Node and get a simple do-nothing server running first.</p>
 
-<p><code class="highlighter-rouge">server.js</code></p>
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
 <span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({})</span>
 </code></pre>
 </div>
@@ -106,8 +107,8 @@
 
 <p>Right now the only thing we want is to have the client recieve “Hello”, and return “ Distri!”. The client will recieve “Hello” through <em>work</em>, which is what Distri gives to all connected clients. So, let’s add “Hello” to the work queue!</p>
 
-<p><code class="highlighter-rouge">server.js</code></p>
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
 <span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({})</span>
 
 <span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
@@ -122,8 +123,8 @@
 
 <p>Let’s start making our worker file.</p>
 
-<p><code class="highlighter-rouge">worker.js</code></p>
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* worker.js */</span>
+<span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">work</span><span class="p">})</span>
 <span class="p">}</span>
 </code></pre>
@@ -133,14 +134,158 @@
 
 <p>We don’t want the script to echo back the message exactly, however. We want it to return “ Distri!”. Obviously, it won’t be too hard.</p>
 
-<p><code class="highlighter-rouge">worker.js</code></p>
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* worker.js */</span>
+<span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s2">" Distri!"</span><span class="p">})</span>
 <span class="p">}</span>
 </code></pre>
 </div>
 
-<p>That’s it! Your worker file is done, but your server has no way to give it to your client (yet).</p>
+<p>That’s it! Your worker file is done, but your server has no way to give it to your client (yet). We still have a little work to do to have our server fully functioning. As of now, we haven’t given the WebSocket constructor any options, so it justs runs with the defaults, which is probably not what you want. If you’ve worked with the <span style="color: blue"><a href="https://github.com/websockets/ws"><code class="highlighter-rouge">ws</code></a></span> module before, this will be familiar to you. If not, there’s not too much to memorize, as we will only be messing with one option.</p>
+
+<p>Options to the <code class="highlighter-rouge">ws</code> constructor are passed from the <code class="highlighter-rouge">connection</code> property in the object passed to the DistriServer constructor. For this example, we only want to specify the port we’re running on, so let’s do that now.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+    <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>We only have two things left to do so make sure to hold out! We still have no way to get the file to our user, and no way to get the result passed back. Let’s fix that first part right now. The DistriServer constructor takes another object property, <code class="highlighter-rouge">files</code>, which is, surprise, another object. This object has two properties, <code class="highlighter-rouge">javascript</code> and <code class="highlighter-rouge">node</code>, both contain strings. Let’s create it right now.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+    <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+    <span class="p">},</span>
+    <span class="na">files</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">javascript</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="na">node</span><span class="p">:</span> <span class="s1">''</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>Now, upload your worker file to a place where you can get a URL that returns the raw content of the file when you fetch the link. (You don’t even have to use rawgit or a similar service. As long as the content is in plain text, file type headers will not matter.)</p>
+
+<p>Now, add that link to the <code class="highlighter-rouge">javascript</code> property in <code class="highlighter-rouge">files</code>.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+    <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+    <span class="p">},</span>
+    <span class="na">files</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">javascript</span><span class="p">:</span> <span class="s1">'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js'</span><span class="p">,</span>
+        <span class="na">node</span><span class="p">:</span> <span class="s1">''</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>When a user submits work, it goes through a process within Distri (which we won’t deal with until next tutorial), and is then sent to the server through the event <code class="highlighter-rouge">workgroup_complete</code>. It is emitted from the server object like a normal event emitter, so let’s listen for the event!</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+    <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+    <span class="p">},</span>
+    <span class="na">files</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">javascript</span><span class="p">:</span> <span class="s1">'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js'</span><span class="p">,</span>
+        <span class="na">node</span><span class="p">:</span> <span class="s1">''</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'workgroup_complete'</span><span class="p">,</span> <span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">rej</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">res</span><span class="p">(</span><span class="nx">o</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p>The bottom three lines probably are very new and obscure, but that’s an easy fix. Let’s go through it bit by bit.</p>
+
+<p><code class="highlighter-rouge">server.on('workgroup_complete', (i, o, res, rej) =&gt; {...}</code></p>
+
+<p>The DistriServer object extends <code class="highlighter-rouge">EventEmitter</code>, so it can emit events. When the event <code class="highlighter-rouge">workgroup_complete</code> is emitted, it provides a callback with four parameters, <code class="highlighter-rouge">i</code>, <code class="highlighter-rouge">o</code>, <code class="highlighter-rouge">res</code>, <code class="highlighter-rouge">rej</code>.</p>
+
+<ul>
+  <li><code class="highlighter-rouge">i</code> - The work that was given to the user. (In this case, <code class="highlighter-rouge">'Hello'</code>)</li>
+  <li><code class="highlighter-rouge">o</code> - The array of sent back work. (This is an array, for reasons that we will discuss in the next tutorial. For our purposes it only has one item, so we can just use the first element in the array.)</li>
+  <li><code class="highlighter-rouge">res</code> - A function from a Promise that accepts the work. Takes one parameter, the work to be accepted.</li>
+  <li><code class="highlighter-rouge">rej</code> - A function from a Promise that rejects the work.</li>
+</ul>
+
+<p>The second line accepts (or “resolves”) the first item in the array, which is “ Distri!”. Once the file is accepted, it is passed onto the next event, <code class="highlighter-rouge">workgroup_accepted</code>. Let’s listen for that.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="cm">/* server.js */</span>
+<span class="kr">const</span> <span class="nx">Distri</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'distri-node'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Distri</span><span class="p">.</span><span class="nx">DistriServer</span><span class="p">({</span>
+    <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+    <span class="p">},</span>
+    <span class="na">files</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">javascript</span><span class="p">:</span> <span class="s1">'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js'</span><span class="p">,</span>
+        <span class="na">node</span><span class="p">:</span> <span class="s1">''</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">addWork</span><span class="p">([</span><span class="s1">'Hello'</span><span class="p">])</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'workgroup_complete'</span><span class="p">,</span> <span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">rej</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">res</span><span class="p">(</span><span class="nx">o</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'workgroup_accepted'</span><span class="p">,</span> <span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p>The last three lines accept the work resolved from <code class="highlighter-rouge">workgroup_complete</code>, and log them to the console, joined together.</p>
+
+<p>Our server side is done, but our client side is not. We still need a running website with Distri on it, so let’s make a skeleton right now.</p>
+
+<div class="language-html highlighter-rouge"><pre class="highlight"><code><span class="c">&lt;!-- index.html --&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="c">&lt;!--whatever you want here--&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="c">&lt;!-- Distri must be loaded below the body --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"path/to/distri.js.min"</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+</code></pre>
+</div>
+
+<p>Right now you may now have a <code class="highlighter-rouge">distri.js.min</code>, but getting one is very simple. There is a tutorial on it <a href="/tutorial/webpack"><span style="color: blue;">here</span></a>.</p>
+
+<p>Now, host your HTML file and visit the website. The first time you visit it, it should ask you if you are okay with Distri being run on your computer. You might be tempted to click okay, but for our purposes, we need to hit “Options”. Another menu will popup, and you’ll see your server <em>isn’t there</em>.</p>
+
+<p>“<em>What?! Why?!</em>”</p>
+
+<p>Distri gets all of its informations from databases (glorified JSON files) that host the metadata for Distri servers, like its name, description, and lots of other important stuff so your client can actually connect to it. Right now you are using a default database, which really doesn’t have too much in it. To be able to connect to your server, you need to manually add it. At the bottom of the menu, there is a yellow button that reads “Add Server”.</p>
+
+<center><img src="http://img.pixady.com/2017/03/458418_capture.png" /></center>
+
+<p>When you click that, another item will be added to the list, and it will have a textbox in it. This is where you can input the URL for your server. If you are running it locally, it should be <code class="highlighter-rouge">localhost:8080</code>. Make sure you run your Distri server, and hit “Enter” to confirm the link, and click “Finish”. Now, check your console.</p>
+
+<center><img src="http://img.pixady.com/2017/03/574497_hello.png" /></center>
+
+<p>You’ve done it! You’ve made your first Distri server! This was obviously a very simple one, and didn’t utilize too many Distri features, but the next few tutorials will let you get familiar with these features, so you can become a Distri master!</p>
+
 
       </div>
 
@@ -148,13 +293,13 @@
 
     <div class="border-top-thin clearfix mt-2 mt-lg-4">
   <div class="container mx-auto px-2">
-    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/"></a></p>
     <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
       <li class="inline-block mr-1">
-        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
       </li>
       <li class="inline-block">
-        <a class="github-button" href="https://github.com/Flarp/distri-js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+        <a class="github-button" href="https://github.com//" data-icon="octicon-star" data-count-href="//stargazers" data-count-api="/repos//#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star / on GitHub">Star</a>
       </li>
     </ul>
   </div>

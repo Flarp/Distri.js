@@ -6,14 +6,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>API</title>
+  <title>Obtaining a Distri.js file</title>
   <meta name="description" content="">
 
   
   
   <link rel="stylesheet" href="/assets/style.css">
   <link rel="stylesheet" href="/assets/perldoc.css">
-  <link rel="canonical" href="http://0.0.0.0:8080/doc/">
+  <link rel="canonical" href="http://0.0.0.0:8080/tutorial/webpack">
   <link rel="alternate" type="application/rss+xml" title="" href="http://0.0.0.0:8080/feed.xml">
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -78,13 +78,13 @@
 
 
         <div class="container mx-auto px-2 mb-2 clearfix header-text">
-          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">API</h2>
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">Obtaining a Distri.js file</h2>
 
           <div class="clearfix mb-4 py-1">
             <div class="col-4 sm-width-full left border-top-thin">
 
               <!-- Set site description in config.yml -->
-              <p class="h4 lh-condensed font-smoothing mt-2 py-1">You're learning!</p>
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">How to webpack Distri</p>
             </div>
 
           </div>
@@ -93,12 +93,25 @@
       </header>
 
       <div class="container mx-auto px-2 py-4">
-        <h1 id="whatcha-lookin-for">Whatcha lookin’ for?</h1>
+        <p>Getting a <code class="highlighter-rouge">distri.min.js</code> file is very simple. You need <code class="highlighter-rouge">npm</code>, <code class="highlighter-rouge">node</code> and <code class="highlighter-rouge">git</code>, but nothing else for this tutorial.</p>
 
-<ul>
-  <li><a href="/doc/node"><span style="color: blue">Distri-Node API</span></a></li>
-  <li><a href="/doc/js"><span style="color: blue">Distri.js API</span></a></li>
-</ul>
+<p>First off, clone the Distri.js repository to get the files.</p>
+
+<p><code class="highlighter-rouge">git clone https://github.com/Flarp/Distri.js</code></p>
+
+<p>Now enter the directory you just cloned.</p>
+
+<p><code class="highlighter-rouge">cd Distri.js</code></p>
+
+<p>Install the modules needed to run everything. (Make sure your Node enviornment is dev, and not production)</p>
+
+<p><code class="highlighter-rouge">npm i</code></p>
+
+<p>Once this is done, you need to run the bundler to put all the modules into one standalone file.</p>
+
+<p><code class="highlighter-rouge">webpack</code></p>
+
+<p>That’s it! Once that command is finished running, you will have a <code class="highlighter-rouge">build</code> directory, with a <code class="highlighter-rouge">distri.min.js</code> file, and a <code class="highlighter-rouge">distri.min.js.map</code> file. The <code class="highlighter-rouge">.js</code> file is the one you will need to have embedded in your webpage to have Distri.</p>
 
       </div>
 

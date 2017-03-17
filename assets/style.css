@@ -1,3 +1,7 @@
+.font-smoothing {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
 /**
   * Reset some basic elements
 */
@@ -65,14 +69,14 @@ a:hover {
   text-decoration: underline; }
 
 pre {
-  border-left: 8px solid #fec92e;
+  border-left: 8px solid #ddd;
   margin: 32px 0;
   padding-left: 16px;
   width: 75%;
   overflow-x: auto; }
 
 code {
-  color: #777;
+  color: #DC3918;
   font-size: 16px;
   padding: 1px 4px; }
 
@@ -98,7 +102,7 @@ code {
   line-height: 1.375;
   padding-left: 20px;
   margin: 40px 0 40px -16px;
-  border-left: 8px solid #fec92e;
+  border-left: 8px solid #ddd;
   font-style: italic; }
   .prose blockquote p {
     font-size: 24px; }
@@ -198,28 +202,28 @@ code {
 
 /* Theme color utilities */
 .header-background {
-  background-color: #fec92e; }
+  background-color: #181818; }
 
 .header-border {
-  border-color: #181818; }
+  border-color: #fff; }
 
 .header-title {
-  color: #181818; }
+  color: #fff; }
 
 .header-text {
-  color: #181818; }
+  color: #fff; }
 
 .header-social {
-  fill: #181818; }
-
-.header-social-accent {
   fill: #fff; }
 
+.header-social-accent {
+  fill: #E74727; }
+
 .header-link:hover {
-  color: #fff !important; }
+  color: #E74727 !important; }
 
 .text-accent {
-  color: #777; }
+  color: #E74727; }
 
 /* Layout utilities */
 .container {
@@ -471,5 +475,5 @@ code {
   font-weight: bold;
   text-decoration: none; }
   .link-primary:hover {
-    color: #777;
+    color: #E74727;
     text-decoration: none; }
