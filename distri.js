@@ -77,7 +77,7 @@ window.Distri = {
             */
         const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
         socket.onopen = () => {
-          socket.send(JSON.stringify({responseType: 'request', response: ['javascript']}))
+          socket.send(JSON.stringify({responseType: 'request', response: 'file'}))
         }
 
             // This is where the WebWorker will be stored for this server
@@ -85,46 +85,47 @@ window.Distri = {
         let ready = false
         let workQueue
 
-        socket.onmessage = (m) => {
+        socket.onmessage = m => {
           const message = JSON.parse(m.data)
 
-                    // Distri tells the user what is getting from the responseType field
+          // Distri tells the user what is getting from the responseType field
           switch (message.responseType) {
             case 'file':
               // location.protocol trick used again
-              fetch(`${location.protocol}//${message.response[0]}`)
+              console.log(`${location.protocol}//${message.response}`)
+              fetch(`${location.protocol}//${message.response}`)
               .then(result => result.arrayBuffer())
               .then(result => {
                   // put the resulting file through the SHA-512 hashing algorithm
                 crypto.digest('SHA-512', result)
-                      .then(hash => {
-                          /*
-                              * If the user entered the server in manually through the Add Server
-                              * button, the server object will not have any hashes, and will be run anyway.
-                              * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
-                              * which the below code decodes to an ArrayBuffer, and checks to see if the
-                              * hash from the object is the same from the hash generated from the file served to the user.
-                              * It's a checksum, to be short. If they are the same, the file is trusted and can be run
-                          */
-                        if (!obj.hashes || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
-                          worker = new Worker(URL.createObjectURL(new Blob([result])))
-                          worker.onmessage = result => {
-                            console.log(result)
-                            if (result.data.result === 'ready') {
-                              ready = true
-                              if (workQueue) {
-                                worker.postMessage({ work: workQueue })
-                              }
-                            } else {
-                              socket.send(JSON.stringify({ responseType: 'submit_work', response: result.data.result }))
-                            }
-                          }
-                          cb(socket, worker)
-                          socket.send(JSON.stringify({responseType: 'request_work', response: true}))
-                        } else {
-                          console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
+                .then(hash => {
+                    /*
+                        * If the user entered the server in manually through the Add Server
+                        * button, the server object will not have any hashes, and will be run anyway.
+                        * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
+                        * which the below code decodes to an ArrayBuffer, and checks to see if the
+                        * hash from the object is the same from the hash generated from the file served to the user.
+                        * It's a checksum, to be short. If they are the same, the file is trusted and can be run
+                    */
+                  if (!obj.hashes || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
+                    worker = new Worker(URL.createObjectURL(new Blob([result])))
+                    worker.onmessage = result => {
+                      console.log(result)
+                      if (result.data.result === 'ready') {
+                        ready = true
+                        if (workQueue) {
+                          worker.postMessage({ work: workQueue })
                         }
-                      })
+                      } else {
+                        socket.send(JSON.stringify({ responseType: 'submit_work', response: result.data.result }))
+                      }
+                    }
+                    cb(socket, worker)
+                    socket.send(JSON.stringify({responseType: 'request_work', response: true}))
+                  } else {
+                    console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
+                  }
+                })
               })
               break
             // This is where the user actually gets work. It is sent to the worker made in the "file" case and awaits a message
@@ -139,7 +140,7 @@ window.Distri = {
     })
   },
   settings: () => {
-        // Just fades the DistriDiv in
+    // Just fades the DistriDiv in
     distriDiv.className = 'fadein'
     const complete = () => {
       distriDiv.style.opacity = '1'

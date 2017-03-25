@@ -17,7 +17,6 @@ module.exports = {
   devtool: 'source-map',
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'webpack-append', query: 'var _crypto;' },
       { test: /\.css$/, loader: 'style-loader!css-loader' }
     ]
   },
