@@ -2,11 +2,11 @@
 
 'use strict'
 
-if (!window.Crypto && !window.msCrypto) throw new Error('Browser does not support cryptographic functions')
+if (!window.crypto && !window.msCrypto) throw new Error('Browser does not support cryptographic functions')
 const crypto = window.crypto.subtle || window.msCrypto
 if (!window.Worker) throw new Error('Browser does not support Web Workers')
 if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not support binary blobs')
-if (!window.navigator) throw new Error('Browser does not support listing computer information')
+let usableCores = window.navigator ? window.navigator.hardwareConcurrency : 1
 
 // This module converts Base64 encoded strings into ArrayBuffers, and vice versa
 const conversion = require('base64-arraybuffer')
@@ -23,7 +23,6 @@ const escape = require('escape-html')
 import './distri.css'
 let sockets = []
 let session = []
-let usableCores = window.navigator.hardwareConcurrency
 
 window.Distri = {
   okay: () => {
@@ -96,7 +95,7 @@ window.Distri = {
               fetch(`${location.protocol}//${message.response}`)
               .then(result => result.arrayBuffer())
               .then(result => {
-                  // put the resulting file through the SHA-512 hashing algorithm
+                // put the resulting file through the SHA-512 hashing algorithm
                 crypto.digest('SHA-512', result)
                 .then(hash => {
                     /*
