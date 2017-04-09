@@ -21,12 +21,10 @@ permalink: /doc/node
         * [`.remaining`](#module_Distri-Node..DistriServer.DistriServer+remaining) : <code>Array</code>
         * [`.pending`](#module_Distri-Node..DistriServer.DistriServer+pending) : <code>number</code>
         * [`.addWork(work)`](#module_Distri-Node..DistriServer+addWork)
-        * [`.CheckPercentage(solutions, percentage, resolve, reject)`](#module_Distri-Node..DistriServer+CheckPercentage)
+        * [`.CheckPercentage(solutions, percentage)`](#module_Distri-Node..DistriServer+CheckPercentage)
         * [`"all_work_complete"`](#module_Distri-Node..DistriServer+event_all_work_complete)
         * [`"work_submitted" (work, solution, resolve, reject)`](#module_Distri-Node..DistriServer+event_work_submitted)
         * [`"workgroup_complete" (work, solutions, resolve, reject)`](#module_Distri-Node..DistriServer+event_workgroup_complete)
-        * [`"workgroup_accepted" (work, solution)`](#module_Distri-Node..DistriServer+event_workgroup_accepted)
-        * [`"workgroup_rejected" (work, solutions)`](#module_Distri-Node..DistriServer+event_workgroup_rejected)
     * [~DistriClient](#module_Distri-Node..DistriClient)
         * [`new DistriClient(host)`](#new_module_Distri-Node..DistriClient_new)
         * [`.client`](#module_Distri-Node..DistriClient.DistriClient+client) : <code>WebSocket</code>
@@ -50,12 +48,10 @@ Constructor for DistriServer.
     * [`.remaining`](#module_Distri-Node..DistriServer.DistriServer+remaining) : <code>Array</code>
     * [`.pending`](#module_Distri-Node..DistriServer.DistriServer+pending) : <code>number</code>
     * [`.addWork(work)`](#module_Distri-Node..DistriServer+addWork)
-    * [`.CheckPercentage(solutions, percentage, resolve, reject)`](#module_Distri-Node..DistriServer+CheckPercentage)
+    * [`.CheckPercentage(solutions, percentage)`](#module_Distri-Node..DistriServer+CheckPercentage)
     * [`"all_work_complete"`](#module_Distri-Node..DistriServer+event_all_work_complete)
     * [`"work_submitted" (work, solution, resolve, reject)`](#module_Distri-Node..DistriServer+event_work_submitted)
     * [`"workgroup_complete" (work, solutions, resolve, reject)`](#module_Distri-Node..DistriServer+event_workgroup_complete)
-    * [`"workgroup_accepted" (work, solution)`](#module_Distri-Node..DistriServer+event_workgroup_accepted)
-    * [`"workgroup_rejected" (work, solutions)`](#module_Distri-Node..DistriServer+event_workgroup_rejected)
 
 <a name="new_module_Distri-Node..DistriServer_new"></a>
 
@@ -127,7 +123,7 @@ A function that adds work to the work queue.
 
 <a name="module_Distri-Node..DistriServer+CheckPercentage"></a>
 
-#### `distriServer.CheckPercentage(solutions, percentage, resolve, reject)`
+#### `distriServer.CheckPercentage(solutions, percentage)`
 A built-in verification function for Distri that checks to see if a set of solutions contains one solution that occurs more than a certain percentage of the time.
 
 **Kind**: instance method of [`DistriServer`](#module_Distri-Node..DistriServer)  
@@ -137,8 +133,8 @@ A built-in verification function for Distri that checks to see if a set of solut
 | --- | --- | --- |
 | solutions | <code>Array</code> | The solutions that are being checked. |
 | percentage | <code>number</code> | The percent of time a certain solution must occur equal to or more than. |
-| resolve | <code>function</code> | A callback function that will be called with the accepted answer. Good to use with the resolve() function in workgroup_complete. |
-| reject | <code>function</code> | A callback function that will be called if none of the solutions satisfy the percentage. Good to use with the reject() function in workgroup_complete. |
+
+Returns a Promise with the accepted work.
 
 <a name="module_Distri-Node..DistriServer+event_work_submitted"></a>
 
@@ -169,30 +165,6 @@ Fires when a piece of work has the required amount of solutions, set by the veri
 | solutions | <code>Array</code> | An array of the solutions each client sent back. Note that this will still be an array even if the verification strength is only one. |
 | resolve | <code>function</code> | A function that accepts the solution given to it. Be sure to give it just one solution, and not the entire array. |
 | reject | <code>function</code> | A function that takes no parameters and rejects the entire workgroup, starting it over. |
-
-<a name="module_Distri-Node..DistriServer+event_workgroup_accepted"></a>
-
-#### `"workgroup_accepted" (work, solution)`
-Fires when a piece of work has a solution accepted for it.
-
-**Kind**: event emitted by [`DistriServer`](#module_Distri-Node..DistriServer) 
-
-| Param | Type | Description |
-| --- | --- | --- |
-| work | <code>Any</code> | The work sent to the clients. |
-| solution | <code>Any</code> | The accepted solution. |
-
-<a name="module_Distri-Node..DistriServer+event_workgroup_rejected"></a>
-
-#### `"workgroup_rejected" (work, solutions)`
-Fires when a workgroup is rejected.
-
-**Kind**: event emitted by [`DistriServer`](#module_Distri-Node..DistriServer)
-
-| Param | Type | Description |
-| --- | --- | --- |
-| work | <code>Any</code> | The work the clients were sent. |
-| solutions | <code>Array</code> | The solutions that were sent in for the problem. |
 
 <a name="module_Distri-Node..DistriServer+event_all_work_complete"></a>
 

@@ -13,7 +13,7 @@ Distri is split into two parts, _Distri.js_, and _Distri-Node_. These are two di
 ```javascript
 /* server.js */
 const Distri = require('distri-node')
-const server = new Distri.DistriServer({})
+const server = new Distri({})
 ```
 
 We now have a simple running server, that does nothing at all. (Yes, the second that constructor is called, it's running. Remember that!) However, our server doesn't quite do anything yet, so we need to change that! We're still missing a worker file, any kind of data handling, and any work. When a user connects, they will be told there is no work, and to go away. That's rude, we don't want our kind clients leaving, so let's keep Distri from telling them that!
@@ -23,7 +23,7 @@ Right now the only thing we want is to have the client recieve "Hello", and retu
 ```javascript
 /* server.js */
 const Distri = require('distri-node')
-const server = new Distri.DistriServer({})
+const server = new Distri({})
 
 server.addWork(['Hello'])
 ```
@@ -56,12 +56,12 @@ onmessage = m => {
 
 That's it! Your worker file is done, but your server has no way to give it to your client (yet). We still have a little work to do to have our server fully functioning. As of now, we haven't given the WebSocket constructor any options, so it justs runs with the defaults, which is probably not what you want. If you've worked with the <span style="color: blue">[`ws`](https://github.com/websockets/ws)</span> module before, this will be familiar to you. If not, there's not too much to memorize, as we will only be messing with one option.
 
-Options to the `ws` constructor are passed from the `connection` property in the object passed to the DistriServer constructor. For this example, we only want to specify the port we're running on, so let's do that now.
+Options to the `ws` constructor are passed from the `connection` property in the object passed to the Distri constructor. For this example, we only want to specify the port we're running on, so let's do that now.
 
 ```javascript
 /* server.js */
 const Distri = require('distri-node')
-const server = new Distri.DistriServer({
+const server = new Distri({
     connection: {
         port: process.env.PORT || 8080
     }
@@ -70,39 +70,17 @@ const server = new Distri.DistriServer({
 server.addWork(['Hello'])
 ```
 
-We only have two things left to do so make sure to hold out! We still have no way to get the file to our user, and no way to get the result passed back. Let's fix that first part right now. The DistriServer constructor takes another object property, `files`, which is, surprise, another object. This object has two properties, `javascript` and `node`, both contain strings. Let's create it right now.
+We only have two things left to do so make sure to hold out! We still have no way to get the file to our user, and no way to get the result passed back. Let's fix that first part right now. The Distri constructor takes another object property, `file`, which is the URL of the file you are sending to your user. Let's add an example one now!
+
 
 ```javascript
 /* server.js */
 const Distri = require('distri-node')
-const server = new Distri.DistriServer({
+const server = new Distri({
     connection: {
         port: process.env.PORT || 8080
     },
-    files: {
-        javascript: '',
-        node: ''
-    }
-})
-
-server.addWork(['Hello'])
-```
-
-Now, upload your worker file to a place where you can get a URL that returns the raw content of the file when you fetch the link. (You don't even have to use rawgit or a similar service. As long as the content is in plain text, file type headers will not matter.)
-
-Now, add that link to the `javascript` property in `files`.
-
-```javascript
-/* server.js */
-const Distri = require('distri-node')
-const server = new Distri.DistriServer({
-    connection: {
-        port: process.env.PORT || 8080
-    },
-    files: {
-        javascript: 'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js',
-        node: ''
-    }
+    file: 'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js'
 })
 
 server.addWork(['Hello'])
@@ -113,20 +91,17 @@ When a user submits work, it goes through a process within Distri (which we won'
 ```javascript
 /* server.js */
 const Distri = require('distri-node')
-const server = new Distri.DistriServer({
+const server = new Distri({
     connection: {
         port: process.env.PORT || 8080
     },
-    files: {
-        javascript: 'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js',
-        node: ''
-    }
+    file: 'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js'
 })
 
 server.addWork(['Hello'])
 
 server.on('workgroup_complete', (i, o, res, rej) => {
-    res(o[0])
+    res()
 })
 ```
 
@@ -134,40 +109,33 @@ The bottom three lines probably are very new and obscure, but that's an easy fix
 
 `server.on('workgroup_complete', (i, o, res, rej) => {...}`
 
-The DistriServer object extends `EventEmitter`, so it can emit events. When the event `workgroup_complete` is emitted, it provides a callback with four parameters, `i`, `o`, `res`, `rej`. 
+The Distri object extends `EventEmitter`, so it can emit events. When the event `workgroup_complete` is emitted, it provides a callback with four parameters, `i`, `o`, `res`, `rej`. 
 
 * `i` - The work that was given to the user. (In this case, `'Hello'`)
 * `o` - The array of sent back work. (This is an array, for reasons that we will discuss in the next tutorial. For our purposes it only has one item, so we can just use the first element in the array.)
 * `res` - A function from a Promise that accepts the work. Takes one parameter, the work to be accepted.
 * `rej` - A function from a Promise that rejects the work.
 
-The second line accepts (or "resolves") the first item in the array, which is " Distri!". Once the file is accepted, it is passed onto the next event, `workgroup_accepted`. Let's listen for that.
+The second line accepts (or "resolves") the first item in the array, which is " Distri!". The work needs to be accepted or rejected to continue the Distri work cycle.
 
 ```javascript
 /* server.js */
 const Distri = require('distri-node')
-const server = new Distri.DistriServer({
+const server = new Distri({
     connection: {
         port: process.env.PORT || 8080
     },
-    files: {
-        javascript: 'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js',
-        node: ''
-    }
+    file: 'https://gist.githubusercontent.com/Flarp/9ff6cc8089099c99993102777b392121/raw/ecea94ed92ae80d65c6fd9afe1ba09d7d83dedc1/example-hello-distri.js'
 })
 
 server.addWork(['Hello'])
 
 server.on('workgroup_complete', (i, o, res, rej) => {
-    res(o[0])
+    console.log(i.concat(o[0]))
+    res()
 })
 
-server.on('workgroup_accepted', (i, o) => {
-    console.log(i.concat(o))
-})
 ```
-
-The last three lines accept the work resolved from `workgroup_complete`, and log them to the console, joined together.
 
 Our server side is done, but our client side is not. We still need a running website with Distri on it, so let's make a skeleton right now.
 
