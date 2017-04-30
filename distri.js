@@ -109,7 +109,6 @@ window.Distri = {
                   if (!obj.hashes || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
                     worker = new Worker(URL.createObjectURL(new Blob([result])))
                     worker.onmessage = result => {
-                      console.log(result)
                       if (result.data.result === 'ready') {
                         ready = true
                         if (workQueue) {
@@ -118,6 +117,11 @@ window.Distri = {
                       } else {
                         socket.send(JSON.stringify({ responseType: 'submit_work', response: result.data.result }))
                       }
+                    }
+                    worker.onerror = e => {
+                      // if the worker has an error, just stop.
+                      worker.terminate()
+                      socket.close()
                     }
                     cb(socket, worker)
                     socket.send(JSON.stringify({responseType: 'request_work', response: true}))
