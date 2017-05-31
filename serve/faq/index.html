@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>FAQ</title>
+  <meta name="description" content="Distributed computing for the web!">
+
+  
+  
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/perldoc.css">
+  <link rel="canonical" href="/faq/">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="/feed.xml">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      <header class="border-bottom-thick px-2 clearfix">
+  <div class="left sm-width-full py-1 mt-1 mt-lg-0">
+    <a class="align-middle link-primary text-accent" href="/">
+      Distri.js
+    </a>
+  </div>
+  <div class="right sm-width-full">
+    <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/doc/">
+            API
+          </a>
+        </li>
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/faq/">
+            FAQ
+          </a>
+        </li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/tutorials/">
+            Tutorials
+          </a>
+        </li>
+        
+      
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">FAQ</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">You can put your hand down now.</p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        <h1 id="what-is-distributedvolunteer-computing-and-how-does-it-speed-up-my-mathscience-project">What is distributed/volunteer computing, and how does it speed up my math/science project?</h1>
+
+<p>Volunteer computing, sometimes more broadly referred to as distributed computing, is taking tasks that can be computed in parallel (at the same time) and doing just that. The tasks are spread out among different computers, and these computers complete the task and report back to the server. You might of heard of this referred to as a master/slave scenario.</p>
+
+<p>Volunteer computing, if done right, and with the right tasks, could rival the power of a supercomputer. If you’re not very good with computer terminology, think of it as taking a bunch of computers, and adding their processing power up. It’s not <em>totally</em> like that, because getting nine women pregnant does not deliver a baby in a month. You can’t actually do a problem <em>faster</em>, but you can do more problems at the same time. This is great for things like the <a href="https://www.youtube.com/watch?v=5mFpVDpKX70"><span style="color: blue">Collatz Conjecture</span></a>, in which the result of a number in a set does not depend on the result of other numbers in the set. Problems that depend on the result of the previous calculation (think of something like the <a href="https://www.youtube.com/watch?v=wTlw7fNcO-0"><span style="color: blue">Fibonacci Sequence</span></a>) are useless when it comes to volunteer computing.</p>
+
+<p>The best kinds of tasks for volunteer computing are <a href="https://en.wikipedia.org/wiki/Embarrassingly_parallel"><span style="color: blue">embarrassingly parallel</span></a> problems. Wikipedia provides some good examples of these kinds of problems <a href="https://en.wikipedia.org/wiki/Embarrassingly_parallel#Examples">here</a>.</p>
+
+<h1 id="how-does-distri-work">How does Distri work?</h1>
+
+<p>Remember that Distri is a software family split into two different packages, a library for Node.js, Distri-Node, and a drop-in script for JavaScript (the browser), Distri.js.</p>
+
+<p>Distri-Node provides built-in functions to the user to allow them to make their volunteer computing server. The user provides work to Distri-Node, and it processes the work into its internal format, and distributes it to clients when they request it. When a client joins, they are given a link of the worker file, in which they fetch themselves and create a Web Worker using it.</p>
+
+<p>Distri also does not automatically accept the first answer given to it, unless you tell it to do so (or not tell it to do otherwise). This is because of a feature called <em>verification strength</em>. The work to client ratio in Distri is by default 1:1, but is <em>highly discouraged</em>. Verification strength allows you to grow that ratio, like 3:1, three clients for every piece of work. This is a security measure, and the main reason Distri was made, almost the only one. If some client starts spamming wrong results, they would have to spam it three times, slowing them down. And even if they did spam answers, they don’t get the same problem every time.</p>
+
+<p>Work is not distributed serially in Distri. When the first client joins for the first time and requests work, they are not given the first piece of work in the list, they are given a random one. If the work was given serially, a client could easily get around the security measure listed above, by just continously submitting answers, and filling up the solution queue for each piece of work.</p>
+
+<p>Ironically enough, Distri-Node was designed to be as minimalistic and modular as possible, while Distri.js is an batteries-included all-in-one package. Distri.js just needs to be dropped into a script tag, and no further work is needed (if you are satisfied by the default database list).</p>
+
+<h1 id="what-were-the-inspirations-for-distri">What were the inspirations for Distri?</h1>
+
+<p>Lots of things. <a href="http://boinc.berkeley.edu/"><span style="color: blue">BOINC</span></a> was the first time I came across the concept of volunteer computing, and I knew right away the browser could use it. <a href="https://github.com/Kurimizumi/Honeybee-Hive"><span style="color: blue">Honeybee-Hive</span></a> was another inspiration. The program did its job well, but failed a lot of placed internally. It was not database-agnostic, and you had to use <a href="https://www.mongodb.com/"><span style="color: blue">MongoDB</span></a> to use HBH. It also did not have the verification strength feature, and work was distributed serially.</p>
+
+<p>Other ideas that influenced the development are the <a href="https://en.wikipedia.org/wiki/Unix_philosophy"><span style="color: blue">Unix Philosophy</span></a>, the <a href="https://en.wikipedia.org/wiki/GNU_Manifesto"><span style="color: blue">GNU Manifesto</span></a>, and the ideas of decentrialization and distributed systems. Distri is under the GPLv3 license.</p>
+
+<h1 id="what-are-the-ethics-behind-distri">What are the ethics behind Distri?</h1>
+
+<p>A big argument against some types of volunteer computing is the lack of client consent. A tempting implementation of volunteer computing in the browser is to just start without client consent. This is not the goal of Distri, as volunteer computing is not truly volunteer unless the client gives consent to have their computer used for the project. Distri asks, on first loading the website, if the user would like to participate in volunteer computing. They have the option to accept, look at the options, or decline. Distri will not ask again after this.</p>
+
+<p>Cryptocurrency-related projects are barred from Distri’s main database for servers, as it goes against the purpose of the program. Distri was made for scientific computing, not for profit. If your website is in need of funds, consider setting up a crowdfunding service for your website, and use Distri alongside it for scientific projects. If you don’t think crowdfunding can sustain your website, reconsider what you’re doing.</p>
+
+      </div>
+
+    </div>
+
+    <div class="border-top-thin clearfix mt-2 mt-lg-4">
+  <div class="container mx-auto px-2">
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
+      <li class="inline-block mr-1">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </li>
+      <li class="inline-block">
+        <a class="github-button" href="https://github.com/Flarp/Distri.js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+  </body>
+
+</html>
+

@@ -24,4 +24,4 @@ Once this is done, you need to run the bundler to put all the modules into one s
 
 `webpack`
 
-That's it! Once that command is finished running, you will have a `build` directory, with a `distri.min.js` file, and a `distri.min.js.map` file. The `.js` file is the one you will need to have embedded in your webpage to have Distri.
+That's it! Once that command is finished running, you will have a `build` directory, with a `distri.out.js` file, and a `distri.out.js.map` file. The `.js` file is the one you will need to have embedded in your webpage to have Distri.

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Obtaining a Distri.js file</title>
+  <meta name="description" content="Distributed computing for the web!">
+
+  
+  
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/perldoc.css">
+  <link rel="canonical" href="/tutorials/webpack">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="/feed.xml">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      <header class="border-bottom-thick px-2 clearfix">
+  <div class="left sm-width-full py-1 mt-1 mt-lg-0">
+    <a class="align-middle link-primary text-accent" href="/">
+      Distri.js
+    </a>
+  </div>
+  <div class="right sm-width-full">
+    <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/doc/">
+            API
+          </a>
+        </li>
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/faq/">
+            FAQ
+          </a>
+        </li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/tutorials/">
+            Tutorials
+          </a>
+        </li>
+        
+      
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">Obtaining a Distri.js file</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1">How to webpack Distri</p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        <p>Getting a <code class="highlighter-rouge">distri.min.js</code> file is very simple. You need <code class="highlighter-rouge">npm</code>, <code class="highlighter-rouge">node</code> and <code class="highlighter-rouge">git</code>, but nothing else for this tutorial.</p>
+
+<p>First off, clone the Distri.js repository to get the files.</p>
+
+<p><code class="highlighter-rouge">git clone https://github.com/Flarp/Distri.js</code></p>
+
+<p>Now enter the directory you just cloned.</p>
+
+<p><code class="highlighter-rouge">cd Distri.js</code></p>
+
+<p>Install the modules needed to run everything. (Make sure your Node enviornment is dev, and not production)</p>
+
+<p><code class="highlighter-rouge">npm i</code></p>
+
+<p>Once this is done, you need to run the bundler to put all the modules into one standalone file.</p>
+
+<p><code class="highlighter-rouge">webpack</code></p>
+
+<p>That’s it! Once that command is finished running, you will have a <code class="highlighter-rouge">build</code> directory, with a <code class="highlighter-rouge">distri.out.js</code> file, and a <code class="highlighter-rouge">distri.out.js.map</code> file. The <code class="highlighter-rouge">.js</code> file is the one you will need to have embedded in your webpage to have Distri.</p>
+
+      </div>
+
+    </div>
+
+    <div class="border-top-thin clearfix mt-2 mt-lg-4">
+  <div class="container mx-auto px-2">
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
+      <li class="inline-block mr-1">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </li>
+      <li class="inline-block">
+        <a class="github-button" href="https://github.com/Flarp/Distri.js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+  </body>
+
+</html>
+

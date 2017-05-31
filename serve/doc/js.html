@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Distri.js Usage</title>
+  <meta name="description" content="Distributed computing for the web!">
+
+  
+  
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/perldoc.css">
+  <link rel="canonical" href="/doc/js">
+  <link rel="alternate" type="application/rss+xml" title="Distri.js" href="/feed.xml">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+
+  <body>
+
+    <div>
+      
+      <header class="header-background">
+      <header class="border-bottom-thick px-2 clearfix">
+  <div class="left sm-width-full py-1 mt-1 mt-lg-0">
+    <a class="align-middle link-primary text-accent" href="/">
+      Distri.js
+    </a>
+  </div>
+  <div class="right sm-width-full">
+    <ul class="list-reset mt-lg-1 mb-2 mb-lg-1">
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/doc/">
+            API
+          </a>
+        </li>
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/faq/">
+            FAQ
+          </a>
+        </li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+        <li class="inline-block">
+          <a class="align-middle link-primary mr-2 mr-lg-0 ml-lg-2" href="/tutorials/">
+            Tutorials
+          </a>
+        </li>
+        
+      
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+        <div class="container mx-auto px-2 mb-2 clearfix header-text">
+          <h2 class="h0 inline-block col-9 sm-width-full mt-3 header-title">Distri.js Usage</h2>
+
+          <div class="clearfix mb-4 py-1">
+            <div class="col-4 sm-width-full left border-top-thin">
+
+              <!-- Set site description in config.yml -->
+              <p class="h4 lh-condensed font-smoothing mt-2 py-1"></p>
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <div class="container mx-auto px-2 py-4">
+        <p>Distri.js does not really have an <em>API</em>, just a few things you need to keep in mind when either building worker scripts, or embedding it into your webpage.</p>
+
+<h1 id="embedding">Embedding</h1>
+
+<p>Distri.js requires a <code class="highlighter-rouge">&lt;body&gt;</code> tag to be present for it to work. This is because the menu attaches to the body of the page, and then hides itself until it is activated.</p>
+
+<div class="language-html highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;--</span> <span class="na">good</span> <span class="na">--</span><span class="nt">&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;content/&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">'distri.min.js'</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+<span class="nt">&lt;--</span> <span class="na">bad</span> <span class="na">--</span><span class="nt">&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">'distri.min.js'</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;content/&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+
+</code></pre>
+</div>
+<p>The bad example will produce this error - <code class="highlighter-rouge">TypeError: document.body is null</code> or <code class="highlighter-rouge">Cannot call method 'appendChild' of null</code>.</p>
+
+<p>Distri has a GUI for the user to be able to choose the servers they would like to contribute to. To activate the Distri menu, you need to have something somewhere call <code class="highlighter-rouge">Distri.settings()</code>. This function will pull up the Distri menu for the user. It is also called automatically the first time the user loads up the page with Distri embedded, along with a dialog box explaining Distri, and asking for user consent.</p>
+
+<h1 id="building-workers">Building Workers</h1>
+
+<h2 id="javascript-workers">Javascript Workers</h2>
+
+<p>JavaScript Worker files are simply <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers"><span style="color: blue">Web Worker</span></a> files, with a tiny bit of structured calls to make sure all parts of Distri are in sync. To start the work cycle, the worker file must post a message, <code class="highlighter-rouge">"ready"</code>, to say that it is ready to start accepting work. No work scripts can have a solution that is <code class="highlighter-rouge">"ready"</code>, as Distri will not post this to the server.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'ready'</span><span class="p">})</span>
+
+<span class="nx">onmesage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>All Distri work is submitted to the main script through the <code class="highlighter-rouge">result</code> property. This is due to how the <code class="highlighter-rouge">postMessage</code> function works, and as of now the value itself (not in an object) cannot be posted.</p>
+
+<p>When the main script posts work to the worker, it will be sent to the <code class="highlighter-rouge">onmessage</code> function in <code class="highlighter-rouge">m.data.work</code>. This is, once again, due to how <code class="highlighter-rouge">postMessage</code> works.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'ready'</span><span class="p">})</span>
+
+<span class="nx">onmessage</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">work</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'is even'</span><span class="p">})</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">postMessage</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'is odd'</span><span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h2 id="node-workers">Node Workers</h2>
+
+<p>Instead of using <code class="highlighter-rouge">postMessage</code>, the workers for Node post use <code class="highlighter-rouge">process.stdout.write</code>. For recieving messages, add an event listener for the <code class="highlighter-rouge">data</code> event on <code class="highlighter-rouge">process.stdin</code>. All messages are stringified, so incoming messages must be parsed, and all outgoing messages must be stringified. Here’s the example above for Node.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'ready'</span><span class="p">}))</span>
+
+<span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="nx">message</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">m</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">work</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'is even'</span><span class="p">}))</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">wrtie</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="na">result</span><span class="p">:</span><span class="s1">'is odd'</span><span class="p">}))</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<h1 id="databases">Databases</h1>
+
+<h2 id="adding-custom-databases">Adding custom databases</h2>
+
+<p>The menu for Distri is populated by JSON databases. Vanilla Distri (the one you get from the official GitHub) only has one database, the official Distri database. You might want to have other databases too, and you can add the ones you would like into your own version of Distri using WebPack.</p>
+
+<p>Inside <code class="highlighter-rouge">webpack.config.js</code>, an array is injected into the build with the databases to be used by Distri, <code class="highlighter-rouge">distriSafeDatabases</code>. You can simply add your own URL’s to this array as you please.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="c1">// ...</span>
+<span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">DefinePlugin</span><span class="p">({</span>
+      <span class="na">distriDefault</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="s1">'url-of-chosen-default-server'</span><span class="p">),</span>
+      <span class="na">distriSafeDatabases</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">([</span><span class="s1">'raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json'</span><span class="p">,</span><span class="s1">'a_custom_url'</span><span class="p">])</span>
+<span class="p">})</span>
+<span class="c1">// ...</span>
+</code></pre>
+</div>
+<p>Remember to not prepend <code class="highlighter-rouge">http(s)://</code>, as Distri will automatically choose the best protocol.</p>
+
+<h2 id="creating-custom-databases">Creating custom databases</h2>
+
+<p>Distri databases have a structure to be followed to make sure the user is getting the right information displayed, and the file they are getting is verified by the database owner.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="c1">// The database is just a JSON array</span>
+<span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s1">'the url of the Distri server, not prepended by http(s)://'</span><span class="p">,</span>
+    <span class="na">title</span><span class="p">:</span> <span class="s1">'the title of the server'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">'a short description of what the server is'</span><span class="p">,</span>
+    <span class="na">icon</span><span class="p">:</span> <span class="s1">'a small image to be shown above the title and description'</span><span class="p">,</span>
+    <span class="na">hashes</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">javascript</span><span class="p">:</span> <span class="s1">'a base64-encoded SHA-256 hash of the javascript file, to prevent people from getting their server on a database, and then changing the worker file to be malicious'</span><span class="p">,</span>
+      <span class="na">node</span><span class="p">:</span> <span class="s1">'same as above, for node servers'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+</div>
+
+
+      </div>
+
+    </div>
+
+    <div class="border-top-thin clearfix mt-2 mt-lg-4">
+  <div class="container mx-auto px-2">
+    <p class="col-8 sm-width-full left py-2 mb-0">This project is maintained by <a class="text-accent" href="https://github.com/Flarp">Flarp</a></p>
+    <ul class="list-reset right clearfix sm-width-full py-2 mb-2 mb-lg-0">
+      <li class="inline-block mr-1">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="Distri.js">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </li>
+      <li class="inline-block">
+        <a class="github-button" href="https://github.com/Flarp/Distri.js" data-icon="octicon-star" data-count-href="Flarp//stargazers" data-count-api="/repos/Flarp/#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Flarp/ on GitHub">Star</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+  </body>
+
+</html>
+
