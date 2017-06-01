@@ -1,4 +1,4 @@
-/* global fetch URL location distriDefault Blob Distri distriSafeDatabases WebSocket Worker */
+/* global fetch URL location distriDefault Blob Distri distriSafeDatabases WebSocket Worker importedCSS */
 
 'use strict'
 
@@ -20,40 +20,33 @@ const Cookie = require('js-cookie')
 // This module escapes HTML to make sure no malicious code is added
 const escape = require('escape-html')
 
-import './distri.css'
+const msgpack = require('msgpack-lite')
+
 let sockets = []
 let session = []
 
 window.Distri = {
-  okay: () => {
+  decided: (cb) => {
     Cookie.set('distri-inform', 'true', {expires: 365})
-    Distri.go()
     inform.className = 'inform-fadeout'
-    inform.addEventListener('webkitAnimationEnd', inform.remove, {once: true})
-    inform.addEventListener('animationend', inform.remove, {once: true})
-    inform.addEventListener('oanimationend', inform.remove, {once: true})
+    inform.addEventListener('webkitAnimationEnd', cb, {once: true})
+    inform.addEventListener('animationend', cb, {once: true})
+    inform.addEventListener('oanimationend', cb, {once: true})
+  },
+  okay: () => {
+    inform.remove()
+    Distri.go()
   },
   disable: () => {
-    Cookie.set('distri-inform', 'true', {expires: 365})
-    inform.className = 'inform-fadeout'
-    inform.addEventListener('webkitAnimationEnd', inform.remove, {once: true})
-    inform.addEventListener('animationend', inform.remove, {once: true})
-    inform.addEventListener('oanimationend', inform.remove, {once: true})
+    inform.remove()
     Distri.reset()
     Distri.save()
     Distri.go()
     Cookie.set('distri-disable', true, {expires: 365})
   },
   options: () => {
-    Cookie.set('distri-inform', 'true', {expires: 365})
-    inform.className = 'inform-fadeout'
-    const optionsFunc = () => {
-      inform.remove()
-      Distri.settings()
-    }
-    inform.addEventListener('webkitAnimationEnd', optionsFunc, {once: true})
-    inform.addEventListener('animationend', optionsFunc, {once: true})
-    inform.addEventListener('oanimationend', optionsFunc, {once: true})
+    inform.remove()
+    Distri.settings()
   },
   start: (objs, cb) => {
         /*
@@ -65,7 +58,7 @@ window.Distri = {
     }
     objs.map(obj => {
       for (let x = 0; x < obj.cores; x++) {
-                /*
+            /*
                 * A WebSocket will be refused if protocols conflict. For example, if the user connected to the
                 * website using HTTP, and the user connects to a WebSocket server using WSS, the server will
                 * refuse the connection because the client is on an insecure protocol. If a user connected to the
@@ -75,16 +68,12 @@ window.Distri = {
                 * The conditional below just checks everything out.
             */
         const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
-        socket.onopen = () => {
-          socket.send(JSON.stringify({responseType: 'request', response: 'file'}))
-        }
 
-            // This is where the WebWorker will be stored for this server
-        let worker
-        let ready = false
-        let workQueue
+        // This is where the WebWorker will be stored for this server
 
         socket.onmessage = m => {
+          console.log(msgpack.decode(m))
+          /*
           const message = JSON.parse(m.data)
 
           // Distri tells the user what is getting from the responseType field
@@ -98,14 +87,14 @@ window.Distri = {
                 // put the resulting file through the SHA-512 hashing algorithm
                 crypto.digest('SHA-512', result)
                 .then(hash => {
-                    /*
+                    
                         * If the user entered the server in manually through the Add Server
                         * button, the server object will not have any hashes, and will be run anyway.
                         * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
                         * which the below code decodes to an ArrayBuffer, and checks to see if the
                         * hash from the object is the same from the hash generated from the file served to the user.
                         * It's a checksum, to be short. If they are the same, the file is trusted and can be run
-                    */
+                    
                   if (!obj.hashes || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
                     worker = new Worker(URL.createObjectURL(new Blob([result])))
                     worker.onmessage = result => {
@@ -138,7 +127,7 @@ window.Distri = {
                 worker.postMessage({work: message.work})
               }
           }
-        }
+        */}
       }
     })
   },
@@ -248,6 +237,9 @@ const Abel = document.createElement('link')
 Abel.rel = 'stylesheet'
 Abel.href = 'https://fonts.googleapis.com/css?family=Abel'
 
+const distriStyling = document.createElement('style')
+distriStyling.innerText = importedCSS
+
 const distriDiv = document.createElement('div')
 distriDiv.id = 'distriDiv'
 
@@ -307,9 +299,9 @@ if (!Cookie.get('distri-inform')) {
   <p style="font-family: Abel;">This website has background distributed computing enabled, powered by Distri-JS. Distri-JS uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'.</p>
  </center>
  <center style="display: block;">
-  <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-success" onclick="Distri.okay()">OK</button>
-  <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-danger" onclick="Distri.disable()">Disable</button>
-  <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-primary" onclick="Distri.options()">Options</button>
+  <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-success" onclick="Distri.decided(Distri.okay)">OK</button>
+  <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-danger" onclick="Distri.decided(Distri.disable)">Disable</button>
+  <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-primary" onclick="Distri.decided(Distri.options)">Options</button>
 </center>`
 
   const complete = () => {
@@ -342,3 +334,4 @@ if (!Cookie.get('distri-inform')) {
 
 document.body.appendChild(distriDiv)
 document.body.appendChild(Abel)
+document.body.appendChild(distriStyling)

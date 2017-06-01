@@ -8,6 +8,8 @@ fs.writeFileSync('./build/index.html', `
   <script src="distri.out.js"></script>
   `)
 
+const importedCSS = JSON.stringify(fs.readFileSync('distri.css', 'utf8'))
+
 module.exports = {
   entry: './distri.js',
   output: {
@@ -15,15 +17,11 @@ module.exports = {
     filename: 'distri.out.js'
   },
   devtool: 'source-map',
-  module: {
-    loaders: [
-      { test: /\.css$/, loader: 'style-loader!css-loader' }
-    ]
-  },
   plugins: [
     new webpack.DefinePlugin({
       distriDefault: JSON.stringify('honeybee-hive-flarp-pyjamarama.c9users.io:8081'),
-      distriSafeDatabases: JSON.stringify(['raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json'])
+      distriSafeDatabases: JSON.stringify(['raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json']),
+      importedCSS
     })
   ]
 }
