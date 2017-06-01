@@ -8,7 +8,7 @@
     "base64-arraybuffer": "^0.1.5",
     "escape-html": "^1.0.3",
     "js-cookie": "^2.1.3",
-    "msgpack-lite": "^0.1.26"
+    "msgpack-js-browser": "git+https://github.com/creationix/msgpack-js-browser.git"
   },
   "devDependencies": {
     "webpack": "git+https://github.com/fulls1z3/webpack"

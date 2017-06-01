@@ -20,10 +20,18 @@ const Cookie = require('js-cookie')
 // This module escapes HTML to make sure no malicious code is added
 const escape = require('escape-html')
 
-const msgpack = require('msgpack-lite')
+const msgpack = require('msgpack-js-browser')
 
 let sockets = []
 let session = []
+
+const doAnimation = (element, classname, callback) => {
+  element.className = classname
+  const finalCallback = callback.bind(null, element)
+  element.addEventListener('animationend', finalCallback, { once: true })
+  element.addEventListener('webkitAnimationEnd', finalCallback, { once: true })
+  element.addEventListener('oanimationend', finalCallback, { once: true })
+}
 
 window.Distri = {
   decided: (cb) => {
@@ -58,6 +66,9 @@ window.Distri = {
     }
     objs.map(obj => {
       for (let x = 0; x < obj.cores; x++) {
+	let worker 
+	let ready = false
+	const encoder = new TextEncoder()
             /*
                 * A WebSocket will be refused if protocols conflict. For example, if the user connected to the
                 * website using HTTP, and the user connects to a WebSocket server using WSS, the server will
@@ -68,11 +79,20 @@ window.Distri = {
                 * The conditional below just checks everything out.
             */
         const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
+        socket.binaryType = 'arraybuffer'
 
         // This is where the WebWorker will be stored for this server
 
         socket.onmessage = m => {
-          console.log(msgpack.decode(m))
+          console.log(msgpack.decode(m.data))
+	  if (m.data.file) worker = new Worker(URL.createObjectURL(new Blob([encoder.encode(m.data.file)])))
+	  if (!ready) {
+	    ready = true
+	    worker.onmessage = e => socket.send(msgpack.encode(e.data.work))
+	  }
+	  worker.postMessage({ work: m.data.work })
+
+	
           /*
           const message = JSON.parse(m.data)
 
@@ -131,16 +151,33 @@ window.Distri = {
       }
     })
   },
+  
+  fadeout: () => {
+    distriDiv.className = 'fadeout'
+    const complete = () => {
+      distriDiv.style.margin = '-1200px 0 0 -325px'
+    }	    
+    distriDiv.addEventListener('webkitAnimationEnd', complete, { once: true })
+    distriDiv.addEventListener('animationend', complete, { once: true })
+    distriDiv.addEventListener('oanimationend', complete, { once: true })
+  },	  
   settings: () => {
     // Just fades the DistriDiv in
+    /*
     distriDiv.className = 'fadein'
     const complete = () => {
       distriDiv.style.opacity = '1'
       distriDiv.style.margin = '-275px 0 0 -325px'
     }
-    distriDiv.addEventListener('webkitAnimationEnd', complete)
-    distriDiv.addEventListener('animationend', complete)
-    distriDiv.addEventListener('oanimationend', complete)
+    
+    distriDiv.addEventListener('webkitAnimationEnd', complete, { once: true })
+    distriDiv.addEventListener('animationend', complete, { once: true })
+    distriDiv.addEventListener('oanimationend', complete, { once: true })
+    */
+    doAnimation(distriDiv, 'fadein', element => {
+      element.style.opacity = '1'
+      element.style.margin = '-275px 0 0 -325px'
+    })
   },
   addCore: ind => {
     if (usableCores > 0) {
@@ -174,13 +211,7 @@ window.Distri = {
       sockets.push({ socket, worker })
     })
     if (clicked) {
-      distriDiv.className = 'fadeout'
-      const complete = () => {
-        distriDiv.style.margin = '-1200px 0 0 -325px'
-      }
-      distriDiv.addEventListener('webkitAnimationEnd', complete)
-      distriDiv.addEventListener('animationend', complete)
-      distriDiv.addEventListener('oanimationend', complete)
+      Distri.fadeout()
     }
   },
   reset: () => {
@@ -198,6 +229,7 @@ window.Distri = {
     Cookie.set('distri-save', JSON.stringify(items), { expires: 365 })
   },
   update: () => {
+    console.log(session)
     distriDiv.innerHTML = `
     <div id="distriMenu">
     ${
@@ -318,6 +350,7 @@ if (!Cookie.get('distri-inform')) {
   Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${database}`))))
   .then(results => Promise.all(results.map(result => result.json())))
   .then(results => {
+    console.log(results)
     session = []
     results.map(database => database.map(item => {
       item.cores = 0
