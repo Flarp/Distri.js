@@ -1,4 +1,4 @@
-/* global fetch URL location distriDefault Blob Distri distriSafeDatabases WebSocket Worker importedCSS */
+/* global fetch URL location Blob Distri WebSocket Worker importedCSS TextEncoder */
 
 'use strict'
 
@@ -8,19 +8,23 @@ if (!window.Worker) throw new Error('Browser does not support Web Workers')
 if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not support binary blobs')
 let usableCores = window.navigator ? window.navigator.hardwareConcurrency : 1
 
-// This module converts Base64 encoded strings into ArrayBuffers, and vice versa
+// Converts Base64 encoded strings into ArrayBuffers, and vice versa
 const conversion = require('base64-arraybuffer')
 
-// This module tests if two or more ArrayBuffers are equal
+// Tests if two or more ArrayBuffers are equal
 const arrEqual = require('arraybuffer-equal')
 
-// This module just abstracts over the document.cookie API
+// Abstracts over the document.cookie API
 const Cookie = require('js-cookie')
 
-// This module escapes HTML to make sure no malicious code is added
+// Escapes HTML to make sure no malicious code is executed
 const escape = require('escape-html')
 
+// Pack/unpack binary messages
 const msgpack = require('msgpack-js-browser')
+
+const distriSafeDatabases = window.DISTRI_DATABASES ? window.DISTRI_DATABASES : ["raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json"]
+const distriDefault = window.DISTRI_DEFAULT ? window.DISTRI_DEFAULT : "localhost:8080"
 
 let sockets = []
 let session = []
@@ -35,11 +39,9 @@ const doAnimation = (element, classname, callback) => {
 
 window.Distri = {
   decided: (cb) => {
-    Cookie.set('distri-inform', 'true', {expires: 365})
-    inform.className = 'inform-fadeout'
-    inform.addEventListener('webkitAnimationEnd', cb, {once: true})
-    inform.addEventListener('animationend', cb, {once: true})
-    inform.addEventListener('oanimationend', cb, {once: true})
+    doAnimation(inform, 'inform-fadeout', element => {
+      Cookie.set('distri-inform', 'true', {expires: 365})
+    })
   },
   okay: () => {
     inform.remove()
@@ -66,9 +68,9 @@ window.Distri = {
     }
     objs.map(obj => {
       for (let x = 0; x < obj.cores; x++) {
-	let worker 
-	let ready = false
-	const encoder = new TextEncoder()
+        let worker
+        let ready = false
+        const encoder = new TextEncoder()
             /*
                 * A WebSocket will be refused if protocols conflict. For example, if the user connected to the
                 * website using HTTP, and the user connects to a WebSocket server using WSS, the server will
@@ -81,99 +83,30 @@ window.Distri = {
         const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${obj.url}`)
         socket.binaryType = 'arraybuffer'
 
-        // This is where the WebWorker will be stored for this server
-
         socket.onmessage = m => {
-          console.log(msgpack.decode(m.data))
-	  if (m.data.file) worker = new Worker(URL.createObjectURL(new Blob([encoder.encode(m.data.file)])))
-	  if (!ready) {
-	    ready = true
-	    worker.onmessage = e => socket.send(msgpack.encode(e.data.work))
-	  }
-	  worker.postMessage({ work: m.data.work })
-
-	
-          /*
-          const message = JSON.parse(m.data)
-
-          // Distri tells the user what is getting from the responseType field
-          switch (message.responseType) {
-            case 'file':
-              // location.protocol trick used again
-              console.log(`${location.protocol}//${message.response}`)
-              fetch(`${location.protocol}//${message.response}`)
-              .then(result => result.arrayBuffer())
-              .then(result => {
-                // put the resulting file through the SHA-512 hashing algorithm
-                crypto.digest('SHA-512', result)
-                .then(hash => {
-                    
-                        * If the user entered the server in manually through the Add Server
-                        * button, the server object will not have any hashes, and will be run anyway.
-                        * If it is trusted, however, it will have the SHA-512 hash in Base64 format,
-                        * which the below code decodes to an ArrayBuffer, and checks to see if the
-                        * hash from the object is the same from the hash generated from the file served to the user.
-                        * It's a checksum, to be short. If they are the same, the file is trusted and can be run
-                    
-                  if (!obj.hashes || (arrEqual(conversion.decode(obj.hashes.javascript), hash))) {
-                    worker = new Worker(URL.createObjectURL(new Blob([result])))
-                    worker.onmessage = result => {
-                      if (result.data.result === 'ready') {
-                        ready = true
-                        if (workQueue) {
-                          worker.postMessage({ work: workQueue })
-                        }
-                      } else {
-                        socket.send(JSON.stringify({ responseType: 'submit_work', response: result.data.result }))
-                      }
-                    }
-                    worker.onerror = e => {
-                      // if the worker has an error, just stop.
-                      worker.terminate()
-                      socket.close()
-                    }
-                    cb(socket, worker)
-                    socket.send(JSON.stringify({responseType: 'request_work', response: true}))
-                  } else {
-                    console.error(`Distri program ${obj.title} has an invalid checksum. Please talk with the creator of the program to fix this problem. The file will not run until this issue is corrected.`)
-                  }
-                })
-              })
-              break
-            // This is where the user actually gets work. It is sent to the worker made in the "file" case and awaits a message
-            case 'submit_work':
-              workQueue = message.work
-              if (ready === true) {
-                worker.postMessage({work: message.work})
-              }
+          if (m.data.file) {
+            // Encode the file from text into a Blob, make a local URL from the Blob, and make a worker from the URL
+            if (obj.hash) {
+              // TODO: Convert base64 to array buffer and find equality of them
+            }
+            worker = new Worker(URL.createObjectURL(new Blob([encoder.encode(m.data.file)])))
           }
-        */}
+          if (!ready) {
+            ready = true
+            worker.onmessage = e => socket.send(msgpack.encode(e.data.work))
+          }
+          worker.postMessage({ work: m.data.work })
+        }
       }
     })
   },
-  
+
   fadeout: () => {
-    distriDiv.className = 'fadeout'
-    const complete = () => {
-      distriDiv.style.margin = '-1200px 0 0 -325px'
-    }	    
-    distriDiv.addEventListener('webkitAnimationEnd', complete, { once: true })
-    distriDiv.addEventListener('animationend', complete, { once: true })
-    distriDiv.addEventListener('oanimationend', complete, { once: true })
-  },	  
+    doAnimation(distriDiv, 'fadeout', element => {
+      element.style.margin = '-1200px 0 0 -325px'
+    })
+  },
   settings: () => {
-    // Just fades the DistriDiv in
-    /*
-    distriDiv.className = 'fadein'
-    const complete = () => {
-      distriDiv.style.opacity = '1'
-      distriDiv.style.margin = '-275px 0 0 -325px'
-    }
-    
-    distriDiv.addEventListener('webkitAnimationEnd', complete, { once: true })
-    distriDiv.addEventListener('animationend', complete, { once: true })
-    distriDiv.addEventListener('oanimationend', complete, { once: true })
-    */
     doAnimation(distriDiv, 'fadein', element => {
       element.style.opacity = '1'
       element.style.margin = '-275px 0 0 -325px'
@@ -229,7 +162,6 @@ window.Distri = {
     Cookie.set('distri-save', JSON.stringify(items), { expires: 365 })
   },
   update: () => {
-    console.log(session)
     distriDiv.innerHTML = `
     <div id="distriMenu">
     ${
@@ -326,25 +258,20 @@ if (!Cookie.get('distri-inform')) {
   })
 
   inform.innerHTML = `
- <h1 style="font-family: Abel;">Distri-JS Disclaimer</h1>
+ <h1 style="font-family: Abel;">Distri.js Disclaimer</h1>
  <center>
-  <p style="font-family: Abel;">This website has background distributed computing enabled, powered by Distri-JS. Distri-JS uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'.</p>
+  <p style="font-family: Abel;">This website has background distributed computing enabled, powered by Distri.js. Distri.js uses idle CPU on computers visiting websites to compute scientific equations to help solve problems that have stumped scientists and mathematicians around the world. If you are okay with this, simply hit 'OK' below. If not, click 'Disable'. If you want to go deep into the configurations, hit 'Options'.</p>
  </center>
  <center style="display: block;">
   <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-success" onclick="Distri.decided(Distri.okay)">OK</button>
   <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-danger" onclick="Distri.decided(Distri.disable)">Disable</button>
   <button style="font-family: Abel; position: relative; display: inline-block; margin: 5px;" class="btn btn-primary" onclick="Distri.decided(Distri.options)">Options</button>
 </center>`
-
-  const complete = () => {
-    inform.style.opacity = '1'
-    inform.style.margin = '-150px 0 0 -250px'
-  }
   document.body.appendChild(inform)
-  inform.className = 'inform-fadein'
-  inform.addEventListener('webkitAnimationEnd', complete, {once: true})
-  inform.addEventListener('animationend', complete, {once: true})
-  inform.addEventListener('oanimationend', complete, {once: true})
+  doAnimation(inform, 'inform-fadein', element => {
+    element.style.opacity = '1'
+    element.style.margin = '-150px 0 0 -250px'
+  })
 } else {
   let defaultUsed = false
   Promise.all(distriSafeDatabases.map(database => fetch((`${location.protocol}//${database}`))))
