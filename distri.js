@@ -6,7 +6,7 @@ if (!window.crypto && !window.msCrypto) throw new Error('Browser does not suppor
 const crypto = window.crypto.subtle || window.msCrypto
 if (!window.Worker) throw new Error('Browser does not support Web Workers')
 if (!window.Blob || !window.ArrayBuffer) throw new Error('Browser does not support binary blobs')
-let usableCores = window.navigator ? window.navigator.hardwareConcurrency : 1
+let usableCores = window.navigator.hardwareConcurrency || 1
 
 // Converts Base64 encoded strings into ArrayBuffers, and vice versa
 const conversion = require('base64-arraybuffer')
@@ -23,8 +23,8 @@ const escape = require('escape-html')
 // Pack/unpack binary messages
 const msgpack = require('msgpack-js-browser')
 
-const distriSafeDatabases = window.DISTRI_DATABASES ? window.DISTRI_DATABASES : ["raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json"]
-const distriDefault = window.DISTRI_DEFAULT ? window.DISTRI_DEFAULT : "localhost:8080"
+const distriSafeDatabases = window.DISTRI_DATABASES || ["raw.githubusercontent.com/Flarp/Distri-Safe/master/safe.json"]
+const distriDefault = window.DISTRI_DEFAULT || "localhost:8080"
 
 let sockets = []
 let session = []
